@@ -2,7 +2,7 @@
  *  Plugin diagnostic
  *
  *  Copyright (c) 2012 AVANTIC ESTUDIO DE INGENIEROS
- *  
+ *
 **/
 
 
@@ -58,6 +58,23 @@ Diagnostic.prototype.isLocationAuthorized = function(successCallback, errorCallb
 						errorCallback,
 						'Diagnostic',
 						'isLocationAuthorized',
+						[]);
+};
+
+/**
+ * Checks if the application is authorized to use location always.
+ *
+ * @param successCallback	The callback which will be called when diagnostic of location is successful.
+ * 							This callback function have a boolean param with the diagnostic result.
+ * @param errorCallback		The callback which will be called when diagnostic of location encounters an error.
+ * 							This callback function have a string param with the error.
+ */
+
+Diagnostic.prototype.isLocationAuthorizedAlways = function(successCallback, errorCallback) {
+	return cordova.exec(successCallback,
+						errorCallback,
+						'Diagnostic',
+						'isLocationAuthorizedAlways',
 						[]);
 };
 

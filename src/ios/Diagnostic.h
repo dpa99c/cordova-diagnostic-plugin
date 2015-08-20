@@ -18,6 +18,7 @@
 - (void) isLocationEnabledSetting: (CDVInvokedUrlCommand*)command;
 - (void) switchToLocationSettings: (CDVInvokedUrlCommand*)command;
 - (void) isLocationAuthorized: (CDVInvokedUrlCommand*)command;
+- (void) isLocationAuthorizedAlways: (CDVInvokedUrlCommand*)command;
 - (void) isWifiEnabled: (CDVInvokedUrlCommand*)command;
 - (void) isCameraEnabled: (CDVInvokedUrlCommand*)command;
 - (void) isBluetoothEnabled: (CDVInvokedUrlCommand*)command;
