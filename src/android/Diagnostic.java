@@ -73,45 +73,60 @@ public class Diagnostic extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         JSONObject r = new JSONObject();
 
-        if (action.equals("switchToLocationSettings")){
-            switchToLocationSettings();
-            callbackContext.success();
-        } else if (action.equals("switchToMobileDataSettings")){
-            switchToMobileDataSettings();
-            callbackContext.success();
-        } else if (action.equals("switchToBluetoothSettings")){
-            switchToBluetoothSettings();
-            callbackContext.success();
-        } else if (action.equals("switchToWifiSettings")){
-            switchToWifiSettings();
-            callbackContext.success();
-        } else if(action.equals("isLocationEnabled") || action.equals("isLocationAuthorized") || action.equals("isLocationEnabledSetting")) {
-            callbackContext.success(isGpsEnabled() ? 1 : 0);
-        } else if(action.equals("isWifiEnabled")) {
-            callbackContext.success(isWifiEnabled() ? 1 : 0);
-        } else if(action.equals("isCameraEnabled")) {
-            callbackContext.success(isCameraEnabled() ? 1 : 0);
-        } else if(action.equals("isBluetoothEnabled")) {
-            callbackContext.success(isBluetoothEnabled() ? 1 : 0);
-        }
-        else {
+        try {
+            if (action.equals("switchToLocationSettings")){
+                switchToLocationSettings();
+                callbackContext.success();
+            } else if (action.equals("switchToMobileDataSettings")){
+                switchToMobileDataSettings();
+                callbackContext.success();
+            } else if (action.equals("switchToBluetoothSettings")){
+                switchToBluetoothSettings();
+                callbackContext.success();
+            } else if (action.equals("switchToWifiSettings")){
+                switchToWifiSettings();
+                callbackContext.success();
+            } else if(action.equals("isLocationEnabled")) {
+                callbackContext.success(isGpsLocationEnabled() || isNetworkLocationEnabled() ? 1 : 0);
+            } else if(action.equals("isGpsLocationEnabled")) {
+                callbackContext.success(isGpsLocationEnabled() ? 1 : 0);
+            } else if(action.equals("isNetworkLocationEnabled")) {
+                callbackContext.success(isNetworkLocationEnabled() ? 1 : 0);
+            } else if(action.equals("isWifiEnabled")) {
+                callbackContext.success(isWifiEnabled() ? 1 : 0);
+            } else if(action.equals("isCameraEnabled")) {
+                callbackContext.success(isCameraEnabled() ? 1 : 0);
+            } else if(action.equals("isBluetoothEnabled")) {
+                callbackContext.success(isBluetoothEnabled() ? 1 : 0);
+            } else if(action.equals("setWifiState")) {
+                setWifiState(args.getBoolean(0));
+                callbackContext.success();
+            } else if(action.equals("setBluetoothState")) {
+                setBluetoothState(args.getBoolean(0));
+                callbackContext.success();
+            } else {
+                String msg = "Invalid action";
+                Log.e(TAG, msg);
+                callbackContext.error(msg);
+                return false;
+            }
+        }catch(Exception e ) {
+            String msg = e.getMessage();
+            Log.e(TAG, "Exception occurred: ".concat(msg));
+            callbackContext.error(msg);
             return false;
         }
         return true;
     }
 
-    /**
-     * Check device settings for GPS.
-     *
-     * @returns {boolean} The status of GPS in device settings.
-     */
-    public boolean isGpsEnabled() {
+
+    public boolean isGpsLocationEnabled() {
         boolean result = isLocationProviderEnabled(LocationManager.GPS_PROVIDER);
         Log.d(TAG, "GPS enabled: " + result);
         return result;
     }
 
-    public boolean isNetworkEnabled() {
+    public boolean isNetworkLocationEnabled() {
         boolean result = isLocationProviderEnabled(LocationManager.NETWORK_PROVIDER);
         Log.d(TAG, "Network enabled: " + result);
         return result;
@@ -162,6 +177,27 @@ public class Diagnostic extends CordovaPlugin {
         Log.d(TAG, "Switch to Wifi Settings");
         Intent settingsIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
         cordova.getActivity().startActivity(settingsIntent);
+    }
+
+    public void setWifiState(boolean enable) {
+        WifiManager wifiManager = (WifiManager) this.cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
+        if (enable == true && !wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(true);
+        } else if (enable == false && wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(false);
+        }
+    }
+
+    public static boolean setBluetoothState(boolean enable) {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        boolean isEnabled = bluetoothAdapter.isEnabled();
+        if (enable && !isEnabled) {
+            return bluetoothAdapter.enable();
+        }
+        else if(!enable && isEnabled) {
+            return bluetoothAdapter.disable();
+        }
+        return true;
     }
 
 }
