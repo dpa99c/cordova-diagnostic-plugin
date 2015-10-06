@@ -19,12 +19,15 @@
 @implementation Diagnostic
 
 - (void)pluginInitialize {
+
+    NSLog(@"RFduino Cordova Plugin");
     
+
     [super pluginInitialize];
     
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
-    
+
     self.bluetoothManager = [[CBCentralManager alloc]
                              initWithDelegate:self
                              queue:dispatch_get_main_queue()
@@ -242,6 +245,7 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:exception.reason];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
 }
 
 - (void) getCameraRollAuthorizationStatus: (CDVInvokedUrlCommand*)command
@@ -289,6 +293,7 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:exception.reason];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
 }
 
 // Bluetooth
@@ -363,11 +368,13 @@
  
 - (BOOL) isLocationAuthorized
 {
+
     CLAuthorizationStatus authStatus = [CLLocationManager authorizationStatus];
     NSString* status = [self getLocationAuthorizationStatusAsString:authStatus];
     if(status == @"authorized_always" || status == @"authorized_when_in_use") {
         return true;
     } else {
+        NSLog(@"This app is not authorized to use location always.");
         return false;
     }
 }
@@ -417,6 +424,7 @@
     NSString* status = @"unknown";
     if(authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted){
             status = @"denied";
+
         }else if(authStatus == PHAuthorizationStatusNotDetermined ){
             status = @"not_determined";
         }else if(authStatus == PHAuthorizationStatusAuthorized){
@@ -434,21 +442,27 @@
     if (getifaddrs(&addresses) != 0) {
         return NO;
     }
-    
+
     cursor = addresses;
+
     while (cursor != NULL)  {
         if (cursor -> ifa_addr -> sa_family == AF_INET && !(cursor -> ifa_flags & IFF_LOOPBACK)) // Ignore the loopback address
         {
             // Check for WiFi adapter
+
             if (strcmp(cursor -> ifa_name, "en0") == 0) {
                 
                 NSLog(@"Wifi ON");
                 wiFiAvailable = YES;
                 break;
+
             }
+
         }
+
         cursor = cursor -> ifa_next;
     }
+
     freeifaddrs(addresses);
     return wiFiAvailable;
 }
@@ -489,9 +503,45 @@
             description = @"State unknown, update imminent.";
             break;
     }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+}
+
+
+- (BOOL) isCameraEnabled
+{
+
+    BOOL cameraAvailable =
+    [UIImagePickerController
+     isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+    if(cameraAvailable) {
     NSLog(@"Bluetooth state changed: %@",description);
     
     self.bluetoothState = state;
+
+}
+
+- (void) isBluetoothEnabled: (CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult;
+    if(self.bluetoothEnabled) {
+
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:1];
+
+    } else {
+
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:0];
+
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+}
+
+
+#pragma mark - CBCentralManagerDelegate
+
+- (void) centralManagerDidUpdateState:(CBCentralManager *)central {
+
     if(state == @"powered_on"){
         self.bluetoothEnabled = true;
     }else{
