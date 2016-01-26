@@ -348,6 +348,20 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void) switchToPasscode: (CDVInvokedUrlCommand*)command
+{
+
+    CDVPluginResult* response;
+    @try {
+        [[UIApplication sharedApplication] openURL: [NSURL URLWithString:@"prefs:root=PASSCODE"]];
+        response = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+    @catch (NSException *exception) {
+        response = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:exception.reason];
+    }
+    [self.commandDelegate sendPluginResult:response callbackId:command.callbackId];
+}
+
 // Audio
 - (void) requestMicrophoneAuthorization: (CDVInvokedUrlCommand*)command
 {
