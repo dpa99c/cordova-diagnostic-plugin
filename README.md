@@ -35,8 +35,7 @@ Cordova diagnostic plugin
     - [isMicrophoneAuthorized()](#ismicrophoneauthorized)
     - [getMicrophoneAuthorizationStatus()](#getmicrophoneauthorizationstatus)
     - [requestMicrophoneAuthorization()](#requestmicrophoneauthorization)
-    - [switchToSettings()](#switchtosettings)
-    - [hasBluetoothLESupport()](#hasBluetoothLESupport)
+    - [switchToSettings()](#switchtosettings)    
   - [Android only](#android-only)
     - [isGpsLocationEnabled()](#isgpslocationenabled)
     - [isNetworkLocationEnabled()](#isnetworklocationenabled)
@@ -45,6 +44,8 @@ Cordova diagnostic plugin
     - [getPermissionsAuthorizationStatus()](#getpermissionsauthorizationstatus)
     - [requestRuntimePermission()](#requestruntimepermission)
     - [requestRuntimePermissions()](#requestruntimepermissions)
+    - [hasBluetoothLESupport()](#hasBluetoothLESupport)
+    - [hasBluetoothLEPeripheralSupport()](#hasBluetoothLEPeripheralSupport)
   - [iOS only](#ios-only)
     - [isLocationEnabledSetting()](#islocationenabledsetting)
     - [registerLocationAuthorizationStatusChangeHandler()](#registerlocationauthorizationstatuschangehandler)
@@ -899,6 +900,10 @@ This callback function is passed a single string parameter containing the error 
 ### hasBluetoothLESupport()
 
 Check if the hardware supports Bluetooth Low Energy
+
+### hasBluetoothLEPeripheralSupport()
+
+Check if the hardware supports Bluetooth Low Energy Peripheral mode
 
 ## iOS only
 
