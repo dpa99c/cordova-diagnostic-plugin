@@ -36,6 +36,7 @@ Cordova diagnostic plugin
     - [getMicrophoneAuthorizationStatus()](#getmicrophoneauthorizationstatus)
     - [requestMicrophoneAuthorization()](#requestmicrophoneauthorization)
     - [switchToSettings()](#switchtosettings)
+    - [hasBluetoothLESupport()](#hasBluetoothLESupport)
   - [Android only](#android-only)
     - [isGpsLocationEnabled()](#isgpslocationenabled)
     - [isNetworkLocationEnabled()](#isnetworklocationenabled)
@@ -894,6 +895,10 @@ This callback function is passed a single string parameter containing the error 
         cordova.plugins.diagnostic.runtimePermission.ACCESS_FINE_LOCATION,
         cordova.plugins.diagnostic.runtimePermission.ACCESS_COARSE_LOCATION
     ]);
+
+### hasBluetoothLESupport()
+
+Check if the hardware supports Bluetooth Low Energy
 
 ## iOS only
 
