@@ -185,6 +185,10 @@ public class Diagnostic extends CordovaPlugin{
                 callbackContext.success(isCameraPresent() ? 1 : 0);
             } else if(action.equals("isBluetoothEnabled")) {
                 callbackContext.success(isBluetoothEnabled() ? 1 : 0);
+            } else if(action.equals("hasBluetoothLESupport")) {
+                callbackContext.success(hasBluetoothLESupport() ? 1 : 0);
+            } else if(action.equals("hasBluetoothLEPeripheralSupport")) {
+                callbackContext.success(hasBluetoothLEPeripheralSupport() ? 1 : 0);
             } else if(action.equals("setWifiState")) {
                 setWifiState(args.getBoolean(0));
                 callbackContext.success();
@@ -265,6 +269,18 @@ public class Diagnostic extends CordovaPlugin{
     public boolean isBluetoothEnabled() {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         boolean result = mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
+        return result;
+    }
+
+    public boolean hasBluetoothLESupport() {
+      PackageManager pm = this.cordova.getActivity().getPackageManager();
+      boolean result = pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
+      return result;
+    }
+
+    public boolean hasBluetoothLEPeripheralSupport() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        boolean result = mBluetoothAdapter != null && mBluetoothAdapter.isMultipleAdvertisementSupported();
         return result;
     }
 
