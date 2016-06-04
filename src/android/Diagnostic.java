@@ -362,7 +362,7 @@ public class Diagnostic extends CordovaPlugin{
         try {
             String currentMode = currentLocationMode;
             String newMode = getLocationModeName();
-            if(!currentMode.equals(newMode)){
+            if(!newMode.equals(currentMode)){
                 Log.d(TAG, "Location mode change to: " + getLocationModeName());
                 executeGlobalJavascript("_onLocationStateChange(\"" + getLocationModeName() +"\");");
             }
