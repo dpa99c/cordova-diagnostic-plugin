@@ -833,8 +833,12 @@ public class Diagnostic extends CordovaPlugin{
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "onReceiveLocationProviderChange");
-            instance.notifyLocationStateChange();
+            if (instance != null){
+                Log.v(TAG, "onReceiveLocationProviderChange");
+                instance.notifyLocationStateChange();    
+            } else {
+                Log.v(TAG, "onReceiveLocationProviderChange: Diagnostic was not initialized");
+            }
         }
 
     }
