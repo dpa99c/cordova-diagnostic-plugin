@@ -42,6 +42,9 @@
         <framework src="Photos.framework" />
         <framework src="AddressBook.framework" />
         <framework src="EventKit.framework" />
+	 <framework src="EventKit.framework" />
+	 <framework src="Contacts.framework" />
+
     </platform>
 
     <!-- android -->
