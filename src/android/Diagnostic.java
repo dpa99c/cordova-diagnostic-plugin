@@ -467,7 +467,7 @@ public class Diagnostic extends CordovaPlugin{
         }
         return false;
     }
-       
+
     public void switchToAppSettings() {
         Log.d(TAG, "Switch to App Settings");
         Intent appIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -947,6 +947,9 @@ public class Diagnostic extends CordovaPlugin{
             File[] externalDirs = this.cordova.getActivity().getApplicationContext().getExternalFilesDirs(null);
 
             for (File file : externalDirs) {
+                if(file == null){
+                    continue;
+                }
                 String applicationPath = file.getPath();
                 String rootPath = applicationPath.split("/Android")[0];
 

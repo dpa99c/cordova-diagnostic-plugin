@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova.plugins.diagnostic"
     version="3.4.1">
-
+    <preference name="Permissions" default="" />
     <name>Diagnostic</name>
     <description>Cordova/Phonegap plugin to check the state of Location/WiFi/Camera/Bluetooth device settings.</description>
     <author>Dave Alden</author>
@@ -84,6 +84,7 @@
 
     <!-- android -->
     <platform name="android">
+        <hook type="after_plugin_install" src="scripts/addPermissions.js"/>
         <config-file target="config.xml" parent="/*">
             <feature name="Diagnostic" >
                 <param name="android-package" value="cordova.plugins.Diagnostic"/>
@@ -92,7 +93,7 @@
         </config-file>
 
         <framework src="com.android.support:support-v4:+" />
-        <framework src="com.android.support:appcompat-v7:+" />
+        <framework src="com.android.support:appcompat-v7:19.0.+" />
 
         <js-module src="www/android/diagnostic.js" name="Diagnostic">
             <clobbers target="cordova.plugins.diagnostic" />

@@ -8,14 +8,10 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
 - [Overview](#overview)
   - [Important notes](#important-notes)
     - [Native environment required](#native-environment-required)
-    - [Version 3.2 for iOS 10](#version-32-for-ios-10)
-    - [Version 3.1 backward-incompatibility](#version-31-backward-incompatibility)
-    - [Version 3 backward-incompatibility](#version-3-backward-incompatibility)
-    - [Building for Android](#building-for-android)
+    - [Android API 23](#android-api-23)
 - [Installation](#installation)
-  - [Using the Cordova/Phonegap CLI](#using-the-cordovaphonegap-cli)
-  - [Using Cordova Plugman](#using-cordova-plugman)
-  - [PhoneGap Build](#phonegap-build)
+  - [Using the Cordova](#using-the-cordova)
+  - [List of Permissions](#list-of-permissions)
 - [Usage](#usage)
   - [Android, iOS and Windows 10 Mobile](#android-ios-and-windows-10-mobile)
     - [isLocationAvailable()](#islocationavailable)
@@ -131,93 +127,58 @@ The plugin is registered in on [npm](https://www.npmjs.com/package/cordova.plugi
 Note that this plugin is intended for use in a **native** mobile environment.
 It will **NOT** work in a browser-emulated Cordova environment, for example by running `cordova serve` or using the [Ripple emulator](https://github.com/ripple-emulator/ripple).
 
-### Version 3.2 for iOS 10
+### Android API 23
 
-`cordova.plugins.diagnostic@3.2.0` adds support for the new UserNotifications framework added in iOS 10. To build using v3.2.0, you will need to use XCode 8+ because there's no way to conditionally include a framework using the `<framework>` tag in the plugin.xml.
-
-Currently (25 Sep 2016) cloud-based build platforms such as Phonegap Build, Ionic Cloud and Intel XDK are still using an XCode 7 build environment, so building with `cordova.plugins.diagnostic@3.2` results in a fatal build error `framework not found UserNotifications`.
-
-Therefore, users of these cloud platforms should specify `cordova.plugins.diagnostic@3.1` in their config.xml until such time as their cloud platform is updated to use XCode 8+.
-
-### Version 3.1 backward-incompatibility
-
-This version contains backwardly-incompatible renaming of some functions in order to logically separate those which check if a device OS setting is enabled (`isSomethingEnabled()`) vs those which check if hardware/sensor is available for use by the app (device OS setting is enabled AND app has authorisation AND hardware is present - `isSomethingAvailable()`).
-
-To avoid breaking existing code which uses the prior function names, either fix the version of the plugin in your config.xml to `cordova.plugins.diagnostic@3.0` or update your code to use [the revised names detailed in the release notes](https://github.com/dpa99c/cordova-diagnostic-plugin/wiki/Release-notes).
-
-### Version 3 backward-incompatibility
-
-In order to make cross-platform use of the shared plugin functions easier, some **backwardly-incompatible changes** have been made to existing API functions in v3 of the plugin.
-
-To avoid breaking existing code which uses the old API syntax, you can continue to use the v2 API by specifying the plugin version when adding it: `cordova.plugins.diagnostic@2`
-
-See the [release notes page ](https://github.com/dpa99c/cordova-diagnostic-plugin/wiki/Release-notes) for details of the backward-incompatible changes.
-
-### Building for Android
-
-In order to avoid build problems with Android, please make sure you have the latest versions of the following Android SDK components installed:
-
-- Android SDK Tools
-- Android SDK Platform-tools
-- Android SDK Build-tools
-- Target SDK Platform - e.g. Android 6.0 (API 23)
-- Android Support Repository
-- Android Support Library
-- Google Repository
-
-Also make sure you have the latest release of the `cordova-android` platform installed. You can check if the Android platform in your Cordova project is up-to-date using `cordova platform check android` and if it's not, update it using `cordova platform rm android && cordova platform add android@latest`.
-
-Phonegap Build uses should use the latest available CLI version ([listed here](https://build.phonegap.com/current-support)) by specifying using the `phonegap-version` tag in your `config.xml`, for example:
-
-    <preference name="phonegap-version" value="cli-6.4.0" />
-
-#### Building for Android runtime permissions
-
-In order to support Android 6 (API 23) [runtime permissions](http://developer.android.com/training/permissions/requesting.html), this plugin must depend on libraries only present in API 23+, so you __must build using Android SDK Platform v23 or above__. To do this you must have [Cordova Android platform](https://github.com/apache/cordova-android)@5.0.0 or above installed in your project. You can check the currently installed platform versions with the following command:
-
-    cordova platform ls
-
-__Note:__ Attempting to build with API 22 or below will result in a build error.
-
-
-You __must__ also make sure your build environment has the following Android libraries installed. In a local build environment, you'd install these via the Android SDK Manager:
-
--  Android Support Library - Rev. 23 or above
--  Android Support Repository - Rev. 23 or above
-
-
-#### Building for API 22 or lower
-
-For users who wish to build against API 22 or below, there is a branch of the plugin repo which contains most of the plugin functionality __except Android 6 runtime permissions__. This removes the dependency on API 23 and will allow you to build against legacy API versions (22 and below).
-
-The legacy branch is published to npm as [`cordova.plugins.diagnostic.api-22`](https://www.npmjs.com/package/cordova.plugins.diagnostic.api-22), so you'll need to use this plugin ID when adding it:
-
-    cordova plugin add cordova.plugins.diagnostic.api-22
-
-**NOTE**: Phonegap Build now supports API 23, so its users may use the main plugin branch (`cordova.plugins.diagnostic`).
+This plugin supports Api 23, if you are using with that  you will not need to add any permission to the permission list, if you are using in a lower api version you will need to add the necessary permission to to the permissions list, when you are installing the plugin.
 
 # Installation
 
-## Using the Cordova/Phonegap CLI
+## Using the Cordova
 
-    $ cordova plugin add cordova.plugins.diagnostic
-    $ phonegap plugin add cordova.plugins.diagnostic
+    $ cordova plugin add https://github.com/dmlg94/cordova-diagnostic-plugin.git --variable Permissions = "['android.permission.INTERNET','android.permission.BROADCAST_STICKY','android.permission.ACCESS_WIFI_STATE','android.permission.WAKE_LOCK','android.permission.ACCESS_LOCATION_EXTRA_COMMANDS','android.permission.RECORD_AUDIO','android.permission.READ_PHONE_STATE','android.permission.READ_EXTERNAL_STORAGE','android.permission.WRITE_EXTERNAL_STORAGE','android.permission.ACCESS_NETWORK_STATE','android.permission.ACCESS_FINE_LOCATION','android.permission.ACCESS_COARSE_LOCATION','android.permission.BLUETOOTH','android.permission.BLUETOOTH_ADMIN','android.permission.CHANGE_WIFI_STATE','android.permission.READ_CALENDAR','android.permission.WRITE_CALENDAR','android.permission.CAMERA','android.permission.READ_CONTACTS','android.permission.WRITE_CONTACTS','android.permission.GET_ACCOUNTS','android.permission.CALL_PHONE','android.permission.ADD_VOICEMAIL','android.permission.USE_SIP','android.permission.PROCESS_OUTGOING_CALLS','android.permission.READ_CALL_LOG','android.permission.WRITE_CALL_LOG','android.permission.SEND_SMS','android.permission.RECEIVE_SMS','android.permission.READ_SMS','android.permission.RECEIVE_WAP_PUSH','android.permission.RECEIVE_MMS','android.permission.BODY_SENSORS']"
+
 
 **NOTE**: Make sure your Cordova CLI version is 5.0.0+ (check with `cordova -v`). Cordova 4.x and below uses the now deprecated [Cordova Plugin Registry](http://plugins.cordova.io) as its plugin repository, so using a version of Cordova 4.x or below will result in installing an [old version](http://plugins.cordova.io/#/package/cordova.plugins.diagnostic) of this plugin.
 
-## Using Cordova Plugman
+## List of Permissions
 
-    $ plugman install --plugin=cordova.plugins.diagnostic --platform=<platform> --project=<project_path> --plugins_dir=plugins
+This is the permissions that you can add to the android manifest, using the permission variable in the instalation of the plugin.
 
-For example, to install for the Android platform
+* android.permission.INTERNET
+* android.permission.BROADCAST_STICKY
+* android.permission.ACCESS_WIFI_STATE
+* android.permission.WAKE_LOCK
+* android.permission.ACCESS_LOCATION_EXTRA_COMMANDS 
+* android.permission.RECORD_AUDIO
+* android.permission.READ_PHONE_STATE
+* android.permission.READ_EXTERNAL_STORAGE
+* android.permission.WRITE_EXTERNAL_STORAGE
+* android.permission.ACCESS_NETWORK_STATE 
+* android.permission.ACCESS_FINE_LOCATION
+* android.permission.ACCESS_COARSE_LOCATION
+* android.permission.BLUETOOTH
+* android.permission.BLUETOOTH_ADMIN
+* android.permission.CHANGE_WIFI_STATE
+* android.permission.READ_CALENDAR
+* android.permission.WRITE_CALENDAR
+* android.permission.CAMERA
+* android.permission.READ_CONTACTS
+* android.permission.WRITE_CONTACTS
+* android.permission.GET_ACCOUNTS
+* android.permission.CALL_PHONE
+* android.permission.ADD_VOICEMAIL
+* android.permission.USE_SIP 
+* android.permission.PROCESS_OUTGOING_CALLS
+* android.permission.READ_CALL_LOG
+* android.permission.WRITE_CALL_LOG
+* android.permission.SEND_SMS
+* android.permission.RECEIVE_SMS 
+* android.permission.READ_SMS
+* android.permission.RECEIVE_WAP_PUSH
+* android.permission.RECEIVE_MMS
+* android.permission.BODY_SENSORS
 
-    $ plugman install --plugin=cordova.plugins.diagnostic --platform=android --project=platforms/android --plugins_dir=plugins
-
-## PhoneGap Build
-Add the following xml to your config.xml to use the latest version of this plugin from [npm](https://www.npmjs.com/package/cordova.plugins.diagnostic):
-
-    <plugin name="cordova.plugins.diagnostic" source="npm" />
-
+ You can check documentation for all permissions in this [link](https://developer.android.com/reference/android/Manifest.permission.html)
 # Usage
 
 The plugin is exposed via the `cordova.plugins.diagnostic` object and provides the following functions:
