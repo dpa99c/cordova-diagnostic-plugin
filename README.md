@@ -61,6 +61,7 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
     - [isGpsLocationEnabled()](#isgpslocationenabled)
     - [isNetworkLocationAvailable()](#isnetworklocationavailable)
     - [isNetworkLocationEnabled()](#isnetworklocationenabled)
+	- [isDataRoamingEnabled()](#isdataroamingenabled)
     - [getLocationMode()](#getlocationmode)
     - [getPermissionAuthorizationStatus()](#getpermissionauthorizationstatus)
     - [getPermissionsAuthorizationStatus()](#getpermissionsauthorizationstatus)
@@ -1477,6 +1478,31 @@ This callback function is passed a single string parameter containing the error 
     }, function(error){
         console.error("The following error occurred: "+error);
     });
+	
+
+### isDataRoamingEnabled()
+
+Checks if the device data roaming setting is enabled.
+Returns true if data roaming is enabled.
+
+    cordova.plugins.diagnostic.isDataRoamingEnabled(successCallback, errorCallback);
+
+#### Parameters
+
+- {Function} successCallback -  The callback which will be called when the operation is successful.
+This callback function is passed a single boolean parameter which is TRUE if data roaming is enabled.
+- {Function} errorCallback -  The callback which will be called when operation encounters an error.
+This callback function is passed a single string parameter containing the error message.
+
+
+#### Example usage
+
+    cordova.plugins.diagnostic.isDataRoamingEnabled(function(enabled){
+        console.log("Data roaming is " + (enabled ? "enabled" : "disabled"));
+    }, function(error){
+        console.error("The following error occurred: "+error);
+    });
+
 
 ### getLocationMode()
 

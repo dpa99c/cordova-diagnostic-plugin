@@ -462,6 +462,18 @@ interface Diagnostic {
 
     /**
      * ANDROID ONLY
+     * Checks if the device data roaming setting is enabled.
+     * Returns true if data roaming is enabled.
+     * @param successCallback
+     * @param errorCallback
+     */
+    isDataRoamingEnabled?: (
+        successCallback: (enabled: boolean) => void,
+        errorCallback: (error: string) => void
+    ) => void;
+
+    /**
+     * ANDROID ONLY
      * Returns the current location mode setting for the device.
      * @param successCallback
      * @param errorCallback

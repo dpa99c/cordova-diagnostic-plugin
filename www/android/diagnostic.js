@@ -566,6 +566,23 @@ var Diagnostic = (function(){
     };
 
     /**
+     * Checks if the device data roaming setting is enabled.
+     * Returns true if data roaming is enabled.
+     *
+     * @param {Function} successCallback -  The callback which will be called when the operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if data roaming is enabled.
+     * @param {Function} errorCallback -  The callback which will be called when the operation encounters an error.
+     *  This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic.isDataRoamingEnabled = function(successCallback, errorCallback) {
+        return cordova.exec(ensureBoolean(successCallback),
+            errorCallback,
+            'Diagnostic',
+            'isDataRoamingEnabled',
+            []);
+    };
+
+    /**
      * Returns the current location mode setting for the device.
      *
      * @param {Function} successCallback -  The callback which will be called when the operation is successful.

@@ -45,6 +45,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
@@ -311,6 +312,8 @@ public class Diagnostic extends CordovaPlugin{
                 callbackContext.success(isNetworkLocationEnabled() ? 1 : 0);
             } else if(action.equals("getLocationMode")) {
                 callbackContext.success(getLocationModeName());
+            } else if(action.equals("isDataRoamingEnabled")) {
+                callbackContext.success(isDataRoamingEnabled() ? 1 : 0);
             } else if(action.equals("isWifiAvailable")) {
                 callbackContext.success(isWifiAvailable() ? 1 : 0);
             } else if(action.equals("isCameraPresent")) {
@@ -426,6 +429,11 @@ public class Diagnostic extends CordovaPlugin{
         }catch(Exception e){
             Log.e(TAG, "Error retrieving current location mode on location state change: "+e.toString());
         }
+    }
+
+    public boolean isDataRoamingEnabled() throws Exception {
+        boolean result = Settings.Global.getInt(this.cordova.getActivity().getContentResolver(), Settings.Global.DATA_ROAMING, 0) == 1;
+        return result;
     }
 
     public boolean isWifiAvailable() {
