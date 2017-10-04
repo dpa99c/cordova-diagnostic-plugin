@@ -66,6 +66,10 @@
         <config-file target="*-Info.plist" parent="NSContactsUsageDescription">
           <string>This app requires contacts access to function properly.</string>
         </config-file>
+	    
+    	<config-file target="*-Info.plist" parent="Privacy - Contacts Usage Description">
+          <string>This app requires contacts access to function properly.</string>
+        </config-file>
 
         <config-file target="*-Info.plist" parent="NSRemindersUsageDescription">
             <string>This app requires reminders access to function properly.</string>
