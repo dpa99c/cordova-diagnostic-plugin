@@ -91,8 +91,8 @@
             </feature>
         </config-file>
 
-        <framework src="com.android.support:support-v4:+" />
-        <framework src="com.android.support:appcompat-v7:+" />
+        <framework src="com.android.support:support-v4:25.3.1" />
+        <framework src="com.android.support:appcompat-v7:25.3.1" />
 
         <js-module src="www/android/diagnostic.js" name="Diagnostic">
             <clobbers target="cordova.plugins.diagnostic" />
