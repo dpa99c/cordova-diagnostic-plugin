@@ -529,6 +529,21 @@ interface Diagnostic {
         errorCallback: (error: string) => void
     ) => void;
 
+
+
+    /**
+     * ANDROID ONLY
+     * Checks if the device datatime setting is enabled.
+     *Returns true if datatime is enabled.
+     * @param successCallback
+     * @param errorCallback
+     */     
+    isTimeAutomaticEnabled?: (
+        successCallback: (enabled: boolean) => void,
+        errorCallback: (error: string) => void
+    ) => void;    
+
+
     /**
      * ANDROID ONLY
      * Returns the current location mode setting for the device.
