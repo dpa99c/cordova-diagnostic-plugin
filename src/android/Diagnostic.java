@@ -230,7 +230,9 @@ public class Diagnostic extends CordovaPlugin{
                 callbackContext.success();
             } else if(action.equals("isDataRoamingEnabled")) {
                 callbackContext.success(isDataRoamingEnabled() ? 1 : 0);
-            } else if(action.equals("getPermissionAuthorizationStatus")) {
+            } else if(action.equals("isTimeAutomaticEnabled")) {
+                callbackContext.success(isTimeAutomaticEnabled() ? 1 : 0);
+            }else if(action.equals("getPermissionAuthorizationStatus")) {
                 this.getPermissionAuthorizationStatus(args);
             } else if(action.equals("getPermissionsAuthorizationStatus")) {
                 this.getPermissionsAuthorizationStatus(args);
@@ -276,6 +278,19 @@ public class Diagnostic extends CordovaPlugin{
         }
         return result;
     }
+       
+       
+    //Editado
+    public boolean isTimeAutomaticEnabled() throws Exception {
+        boolean result;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            result = Settings.System.getInt(this.cordova.getActivity().getContentResolver(), Settings.Global.AUTO_TIME, 0) == 1;
+        }else{
+            result = Settings.Global.getInt(this.cordova.getActivity().getContentResolver(), Settings.Global.AUTO_TIME, 0) == 1;
+        }
+        return result;
+    }   
+    //Editado       
 
     public void switchToAppSettings() {
         logDebug("Switch to App Settings");
