@@ -55,7 +55,7 @@
              <string>$MICROPHONE_USAGE_DESCRIPTION</string>
          </config-file>        
         
-         <preference name="CAMERA_USAGE_DESCRIPTION" default="This app requires camera access to function properly." />
+         <preference name="CAMERA_USAGE_DESCRIPTION" default="For Barcode Scanning." />
          <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
              <string>$CAMERA_USAGE_DESCRIPTION</string>
          </config-file>
