@@ -24,45 +24,56 @@
         </config-file>
         
         <!-- Default usage descriptions: override as necessary in .plist -->
-        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
-            <string>This app requires constant access to your location in order to track your position, even when the screen is off.</string>
-        </config-file>
         
-        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
-            <string>This app requires access to your location when the screen is on and the app is displayed.</string>
-        </config-file>
+         <preference name="LOCATIONALWAYS_USAGE_DESCRIPTION" default="This app requires constant access to your location in order to track your position, even when the screen is off." />
+         <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
+             <string>$LOCATIONALWAYS_USAGE_DESCRIPTION</string>
+         </config-file>
         
-        <config-file target="*-Info.plist" parent="NSCalendarsUsageDescription">
-            <string>This app requires calendar access to function properly.</string>
-        </config-file>
+         <preference name="LOCATIONWHENINUSE_USAGE_DESCRIPTION" default="This app requires access to your location when the screen is on and the app is displayed." />
+         <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
+             <string>$LOCATIONWHENINUSE_USAGE_DESCRIPTION</string>
+         </config-file>
 
-        <config-file target="*-Info.plist" parent="NSPhotoLibraryUsageDescription">
-            <string>This app requires photo library access to function properly.</string>
-        </config-file>
+         <preference name="CALENDAR_USAGE_DESCRIPTION" default="This app requires calendar access to function properly." />
+         <config-file target="*-Info.plist" parent="NSCalendarsUsageDescription">
+             <string>$CALENDAR_USAGE_DESCRIPTION</string>
+         </config-file>    
 
-        <config-file target="*-Info.plist" parent="NSBluetoothPeripheralUsageDescription">
-            <string>This app requires bluetooth access to function properly.</string>
-        </config-file>
+         <preference name="PHOTOLIBRARY_USAGE_DESCRIPTION" default="This app requires photo library access to function properly." />
+         <config-file target="*-Info.plist" parent="NSPhotoLibraryUsageDescription">
+             <string>$PHOTOLIBRARY_USAGE_DESCRIPTION</string>
+         </config-file>        
+        
+         <preference name="BLUETOOTH_USAGE_DESCRIPTION" default="This app requires bluetooth access to function properly." />
+         <config-file target="*-Info.plist" parent="NSBluetoothPeripheralUsageDescription">
+             <string>$BLUETOOTH_USAGE_DESCRIPTION</string>
+         </config-file>
+        
+         <preference name="MICROPHONE_USAGE_DESCRIPTION" default="This app requires microphone access to function properly." />
+         <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
+             <string>$MICROPHONE_USAGE_DESCRIPTION</string>
+         </config-file>        
+        
+         <preference name="CAMERA_USAGE_DESCRIPTION" default="This app requires camera access to function properly." />
+         <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+             <string>$CAMERA_USAGE_DESCRIPTION</string>
+         </config-file>
+        
+         <preference name="MOTION_USAGE_DESCRIPTION" default="This app requires motion detection access to function properly." />
+         <config-file target="*-Info.plist" parent="NSMotionUsageDescription">
+             <string>$MOTION_USAGE_DESCRIPTION</string>
+         </config-file>
 
-        <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
-            <string>This app requires microphone access to function properly.</string>
-        </config-file>
-
-        <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
-            <string>This app requires camera access to function properly.</string>
-        </config-file>
-
-        <config-file target="*-Info.plist" parent="NSMotionUsageDescription">
-            <string>This app requires motion detection access to function properly.</string>
-        </config-file>
-
-        <config-file target="*-Info.plist" parent="NSContactsUsageDescription">
-          <string>This app requires contacts access to function properly.</string>
-        </config-file>
-
-        <config-file target="*-Info.plist" parent="NSRemindersUsageDescription">
-            <string>This app requires reminders access to function properly.</string>
-        </config-file>
+         <preference name="CONTACTS_USAGE_DESCRIPTION" default="This app requires contacts access to function properly." />
+         <config-file target="*-Info.plist" parent="NSContactsUsageDescription">
+             <string>$CONTACTS_USAGE_DESCRIPTION</string>
+         </config-file>
+        
+         <preference name="REMINDERS_USAGE_DESCRIPTION" default="This app requires reminders access to function properly." />
+         <config-file target="*-Info.plist" parent="NSRemindersUsageDescription">
+             <string>$REMINDERS_USAGE_DESCRIPTION</string>
+         </config-file>
 
         <js-module src="www/ios/diagnostic.js" name="Diagnostic">
             <clobbers target="cordova.plugins.diagnostic" />
