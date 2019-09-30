@@ -25,16 +25,6 @@
         
         <!-- Default usage descriptions: override as necessary in .plist -->
         
-        <preference name="NSBluetoothPeripheralUsageDescription" default="This app requires bluetooth access to function properly." />
-        <config-file target="*-Info.plist" parent="NSBluetoothPeripheralUsageDescription">
-		    <string>This app requires bluetooth access to function properly.</string>
-        </config-file>
-		
-		
-        <preference name="NSBluetoothAlwaysUsageDescription" default="This app requires bluetooth access to function properly." />
-        <config-file target="*-Info.plist" parent="NSBluetoothAlwaysUsageDescription">
-		    <string>This app requires bluetooth access to function properly.</string>
-        </config-file>
         
          <preference name="LOCATIONALWAYS_USAGE_DESCRIPTION" default="This app requires constant access to your location in order to track your position, even when the screen is off." />
          <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
