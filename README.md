@@ -1624,7 +1624,7 @@ This callback function is passed a single string parameter containing the error 
     });
 
 
-### registerLocationStateChangeHandler()
+### registerLocationAccuracyAuthorizationChangeHandler()
 
 Platforms: iOS
 
