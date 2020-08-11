@@ -375,16 +375,16 @@ In order to avoid build problems with Android, please make sure you have the lat
 ## Using the Cordova/Phonegap/Ionic CLI
 
     $ cordova plugin add cordova.plugins.diagnostic
-    $ cordova plugin add cordova.plugins.diagnostic --variable ANDROIDX_VERSION=1.0.0
+    $ cordova plugin add cordova.plugins.diagnostic --variable ANDROIDX_LEGACY_VERSION=1.0.0 --variable ANDROIDX_APPCOMPAT_VERSION=1.2.0
     $ phonegap plugin add cordova.plugins.diagnostic
     $ ionic cordova plugin add cordova.plugins.diagnostic
 
 ## AndroidX Library
 This plugin uses/depends on the [AndroidX (Jetpack) libraries](https://developer.android.com/jetpack/androidx) (these supersede the [Android Support Library](https://developer.android.com/topic/libraries/support-library/index.html) which is no longer used by this plugin since `cordova.plugins.diagnostic@6`).
 
-This plugin pins a default version of the library in [its `plugin.xml`](https://github.com/dpa99c/cordova-diagnostic-plugin/blob/master/plugin.xml) however you can override this to specify a different version using the `ANDROIDX_VERSION` variable at plugin installation time, for example:
+This plugin pins a default version of the library in [its `plugin.xml`](https://github.com/dpa99c/cordova-diagnostic-plugin/blob/master/plugin.xml) however you can override this to specify a different version using the `ANDROIDX_LEGACY_VERSION` and `ANDROIDX_APPCOMPAT_VERSION` variable at plugin installation time, for example:
 
-    $ cordova plugin add cordova.plugins.diagnostic --variable ANDROIDX_VERSION=1.0.0
+    $ cordova plugin add cordova.plugins.diagnostic --variable ANDROIDX_LEGACY_VERSION=1.0.0 ANDROIDX_APPCOMPAT_VERSION=1.2.0
 
 
 ## Specifying modules
