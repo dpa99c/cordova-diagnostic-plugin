@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.provider.Settings;
 import android.util.Log;
+import android.Manifest;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -112,7 +113,7 @@ public class Diagnostic_NFC extends CordovaPlugin{
         diagnostic = Diagnostic.getInstance();
 
         try {
-            diagnostic.applicationContext.registerReceiver(NFCStateChangedReceiver, new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED));
+            diagnostic.applicationContext.registerReceiver(NFCStateChangedReceiver, new IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED), Manifest.permission.NFC, null);
             nfcManager = (NfcManager) diagnostic.applicationContext.getSystemService(Context.NFC_SERVICE);
         }catch(Exception e){
             diagnostic.logWarning("Unable to register NFC state change receiver: " + e.getMessage());

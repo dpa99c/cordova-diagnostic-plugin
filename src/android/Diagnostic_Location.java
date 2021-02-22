@@ -34,6 +34,7 @@ import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Build;
 import android.util.Log;
+import android.Manifest;
 
 import android.content.Context;
 import android.content.Intent;
@@ -107,7 +108,7 @@ public class Diagnostic_Location extends CordovaPlugin{
         diagnostic = Diagnostic.getInstance();
 
         try {
-            diagnostic.applicationContext.registerReceiver(locationProviderChangedReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+            diagnostic.applicationContext.registerReceiver(locationProviderChangedReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION), Manifest.permission.ACCESS_COARSE_LOCATION, null);
             locationManager = (LocationManager) this.cordova.getActivity().getSystemService(Context.LOCATION_SERVICE);
         }catch(Exception e){
             diagnostic.logWarning("Unable to register Location Provider Change receiver: " + e.getMessage());

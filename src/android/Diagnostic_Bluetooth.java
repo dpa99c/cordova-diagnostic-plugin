@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
+import android.Manifest;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -121,7 +122,7 @@ public class Diagnostic_Bluetooth extends CordovaPlugin{
         diagnostic = Diagnostic.getInstance();
 
         try {
-            diagnostic.applicationContext.registerReceiver(bluetoothStateChangeReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+            diagnostic.applicationContext.registerReceiver(bluetoothStateChangeReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED), Manifest.permission.BLUETOOTH, null);
             currentBluetoothState = getBluetoothState();
         }catch(Exception e){
             diagnostic.logWarning("Unable to register Bluetooth state change receiver: " + e.getMessage());
