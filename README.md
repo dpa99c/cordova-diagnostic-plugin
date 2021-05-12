@@ -301,6 +301,10 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
     - [getExternalSdCardDetails()](#getexternalsdcarddetails)
       - [Parameters](#parameters-76)
       - [Example usage](#example-usage-77)
+  - [Airplane mode module](#airplane-mode-module)
+    - [isAirplaneModeOn()](#isairplanemodeon)
+      - [Parameters](#parameters-77)
+      - [Example usage](#example-usage-78)
 - [Platform Notes](#platform-notes)
   - [Android](#android-3)
     - [Android permissions](#android-permissions)
@@ -3479,6 +3483,30 @@ The function is passed a single string parameter containing the error message.
     }, function(error){
         console.error(error);
     });
+
+## Airplane mode module
+
+Purpose: Airplane mode detection functionality. This is independent of detection of network, as you may have airplane mode on, and also have wifi enabled.
+
+Platforms: Android
+
+Configuration name: `AIRPLANE_MODE`
+
+### isAirplaneMoodeOn()
+
+Platforms: Android
+
+Checks if Airplane mode is on.
+Returns true if the device is in Airplane mode
+
+    cordova.plugins.diagnostic.isAirplaneMoodeOn(successCallback, errorCallback);
+
+#### Parameters
+
+- {Function} successCallback -  The callback which will be called when operation is successful.
+The function is passed a single boolean parameter which is TRUE if Bluetooth is available.
+- {Function} errorCallback -  The callback which will be called when operation encounters an error.
+The function is passed a single string parameter containing the error message.
 
 # Platform Notes
 

@@ -343,6 +343,21 @@
         <source-file src="src/android/Diagnostic_Camera.java" target-dir="src/cordova/plugins" />
         <!--END_MODULE CAMERA-->
 
+        <!--BEGIN_MODULE AIRPLANE_MODE-->
+        <config-file target="config.xml" parent="/*">
+            <feature name="Diagnostic_Airplane_Mode" >
+                <param name="android-package" value="cordova.plugins.Diagnostic_Airplane_Mode"/>
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <js-module name="Diagnostic_Airplane_Mode" src="www/android/diagnostic.airplane_mode.js">
+            <merges target="cordova.plugins.diagnostic.airplane_mode" />
+        </js-module>
+
+        <source-file src="src/android/Diagnostic_Airplane_Mode.java" target-dir="src/cordova/plugins" />
+        <!--END_MODULE AIRPLANE_MODE-->
+
         <!--BEGIN_MODULE NOTIFICATIONS-->
         <config-file target="config.xml" parent="/*">
             <feature name="Diagnostic_Notifications" >

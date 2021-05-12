@@ -796,6 +796,17 @@ interface Diagnostic {
 
     /**
      * ANDROID ONLY
+     * Checks if the device setting for Airplane Mode is switched on.
+     * @param successCallback
+     * @param errorCallback
+     */
+    isAirplaneModeOn?: (
+      successCallback: (enabled: boolean) => void,
+      errorCallback: (error: string) => void
+    ) => void;
+
+    /**
+     * ANDROID ONLY
      * Checks if the application is authorized to use external storage.
      * @param successCallback
      * @param errorCallback

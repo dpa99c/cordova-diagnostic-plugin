@@ -1291,6 +1291,22 @@ var Diagnostic = (function(){
         }
     };
 
+    /*************
+     * Airplane mode
+     *************/
+
+    /**
+     * Switches to the nfc settings page in the Settings app
+     */
+    Diagnostic.isAirplaneModeOn = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.airplane_mode){
+            cordova.plugins.diagnostic.airplane_mode.isAirplaneModeOn.apply(this, arguments);
+        }else{
+            throw "Diagnostic Airplane mode module is not installed";
+        }
+    };
+
+
     return Diagnostic;
 });
 module.exports = new Diagnostic();

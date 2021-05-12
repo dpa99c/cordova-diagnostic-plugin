@@ -20,7 +20,8 @@ const MODULES = [
     "REMINDERS",
     "MOTION",
     "NFC",
-    "EXTERNAL_STORAGE"
+    "EXTERNAL_STORAGE",
+    "AIRPLANE_MODE"
 ];
 
 const COMMENT_START = "<!--";
