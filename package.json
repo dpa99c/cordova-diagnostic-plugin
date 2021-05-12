@@ -37,7 +37,7 @@
     "dependencies": {
         "colors": "^1.1.2",
         "elementtree": "^0.1.6",
-        "minimist": "1.2.0"
+        "minimist": "1.2.5"
     },
     "scripts": {
         "postinstall": "node ./scripts/apply-modules.js"
