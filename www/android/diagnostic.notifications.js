@@ -58,6 +58,17 @@ var Diagnostic_Notifications = (function(){
             []);
     };
 
+    /**
+     * Switches to the notifications page in the Settings app
+     */
+    Diagnostic_Notifications.switchToNotificationSettings = function() {
+        return cordova.exec(null,
+            null,
+            'Diagnostic_Notifications',
+            'switchToNotificationSettings',
+            []);
+    };
+
     return Diagnostic_Notifications;
 });
 module.exports = new Diagnostic_Notifications();

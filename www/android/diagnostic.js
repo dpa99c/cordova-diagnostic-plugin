@@ -1040,6 +1040,17 @@ var Diagnostic = (function(){
         }
     };
 
+    /**
+     * Switches to the notification settings page in the Settings app
+     */
+    Diagnostic.switchToNotificationSettings = function() {
+        if (cordova.plugins.diagnostic.notifications){
+            cordova.plugins.diagnostic.notifications.switchToNotificationSettings.apply(this, arguments);
+        } else {
+            throw "Diagnostic notification module is not installed";
+        }
+    };
+
 
     /***************************
      * Microphone / Record Audio

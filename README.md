@@ -216,6 +216,7 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
     - [requestRemoteNotificationsAuthorization()](#requestremotenotificationsauthorization)
       - [Parameters](#parameters-52)
       - [Example usage](#example-usage-53)
+    - [switchToNotificationSettings()](#switchToNotificationSettings)
   - [Microphone module](#microphone-module)
     - [isMicrophoneAuthorized()](#ismicrophoneauthorized)
       - [Parameters](#parameters-53)
@@ -2606,6 +2607,17 @@ Requests remote notifications authorization for the application.
         ],
         omitRegistration: false
     });
+
+
+### switchToNotificationSettings()
+
+Platforms: Android
+
+Open notification settings for your app
+
+On Android versions lower than O, this will open the same page as `switchToSettings()`.
+
+    cordova.plugins.diagnostic.switchToNFCSettings();
 
 ## Microphone module
 
