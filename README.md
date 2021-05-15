@@ -6,6 +6,7 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [Cordova diagnostic plugin ![Latest Stable Version](https://www.npmjs.com/package/cordova.plugins.diagnostic) [![Total Downloads](https://img.shields.io/npm/dt/cordova.plugins.diagnostic.svg)](https://npm-stat.com/charts.html?package=cordova.plugins.diagnostic)](#cordova-diagnostic-plugin--)
 - [Overview](#overview)
   - [Important notes](#important-notes)
     - [Minimum supported versions](#minimum-supported-versions)
@@ -306,6 +307,7 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
     - [Android permissions](#android-permissions)
       - [Android runtime permissions](#android-runtime-permissions)
         - ["Dangerous" runtime permissions](#dangerous-runtime-permissions)
+        - [API 29 runtime permissions](#api-29-runtime-permissions)
         - [Runtime permission groups](#runtime-permission-groups)
         - [Runtime permissions example project](#runtime-permissions-example-project)
         - [Android Camera permissions](#android-camera-permissions)
@@ -321,7 +323,7 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
     - [iOS](#ios-4)
 - [Release notes](#release-notes)
 - [Credits](#credits)
-- [License](#license)
+- [# License](#-license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -3541,6 +3543,10 @@ The plugin defines the [full list of dangersous permissions available in API 23]
 - `cordova.plugins.diagnostic.permission.READ_EXTERNAL_STORAGE`
 - `cordova.plugins.diagnostic.permission.BODY_SENSORS`
 
+##### API 29 runtime permissions
+With the introduction of Android 10, came Physical Activity permissions: https://developer.android.com/about/versions/10/privacy/changes#physical-activity-recognition.
+- `cordova.plugins.diagnostic.permission.ACTIVITY_RECOGNITION`
+
 
 ##### Runtime permission groups
 
@@ -3566,6 +3572,7 @@ Permissions are grouped as follows:
     SENSORS: [BODY_SENSORS],
     SMS: [SEND_SMS, RECEIVE_SMS, READ_SMS, RECEIVE_WAP_PUSH, RECEIVE_MMS],
     STORAGE: [READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE]
+    PHYSICAL_ACTIVITY: [ACTIVITY_RECOGNITION]
 
 ##### Runtime permissions example project
 

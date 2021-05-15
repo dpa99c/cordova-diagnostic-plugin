@@ -485,5 +485,11 @@
             <merges target="" />
         </js-module>
         <!--END_MODULE CAMERA-->
+
+        <!--BEGIN_MODULE ACTIVITY_RECOGNITION-->
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+        </config-file>
+        <!--END_MODULE BLUETOOTH-->
     </platform>
 </plugin>

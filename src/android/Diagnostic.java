@@ -105,6 +105,8 @@ public class Diagnostic extends CordovaPlugin{
         Diagnostic.addBiDirMapEntry(_permissionsMap, "WRITE_CALL_LOG", Manifest.permission.WRITE_CALL_LOG);
         Diagnostic.addBiDirMapEntry(_permissionsMap, "READ_EXTERNAL_STORAGE", Manifest.permission.READ_EXTERNAL_STORAGE);
         Diagnostic.addBiDirMapEntry(_permissionsMap, "BODY_SENSORS", Manifest.permission.BODY_SENSORS);
+        // Add as string as Manifest.permission.ACTIVITY_RECOGNITION not defined in < API 29:
+        Diagnostic.addBiDirMapEntry(_permissionsMap, "ACTIVITY_RECOGNITION", "android.permission.ACTIVITY_RECOGNITION");
         permissionsMap = Collections.unmodifiableMap(_permissionsMap);
     }
 
@@ -495,6 +497,10 @@ public class Diagnostic extends CordovaPlugin{
                 // This version of Android doesn't support background location permission so check for standard coarse location permission
                 permission = "ACCESS_COARSE_LOCATION";
             }
+            if(Build.VERSION.SDK_INT < 29 && permission.equals("ACTIVITY_RECOGNITION")){
+                // This version of Android doesn't support activity recognition permission so check for body sensors permission
+                permission = "BODY_SENSORS";
+            }
             String androidPermission = permissionsMap.get(permission);
             Log.v(TAG, "Get authorisation status for "+androidPermission);
             boolean granted = hasPermission(androidPermission);
@@ -802,6 +808,10 @@ public class Diagnostic extends CordovaPlugin{
                 if(Build.VERSION.SDK_INT < 29 && permission.equals("ACCESS_BACKGROUND_LOCATION")){
                     // This version of Android doesn't support background location permission so use standard coarse location permission
                     permission = "ACCESS_COARSE_LOCATION";
+                }
+                if(Build.VERSION.SDK_INT < 29 && permission.equals("ACTIVITY_RECOGNITION")){
+                    // This version of Android doesn't support activity recognition permission so check for body sensors permission
+                    permission = "BODY_SENSORS";
                 }
                 String status;
                 if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
