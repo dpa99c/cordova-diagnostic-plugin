@@ -122,6 +122,14 @@ static NSString*const REMOTE_NOTIFICATIONS_BADGE = @"badge";
                     status = AUTHORIZATION_NOT_DETERMINED;
                 }else if(authStatus == UNAuthorizationStatusAuthorized){
                     status = AUTHORIZATION_GRANTED;
+                }else if(@available(iOS 12.0, *)) {
+                    if(authStatus == UNAuthorizationStatusProvisional) {
+                        status = AUTHORIZATION_PROVISIONAL;
+                    }
+                }else if (@available(iOS 14.0, *)) {
+                    if(authStatus == UNAuthorizationStatusEphemeral) {
+                        status = AUTHORIZATION_EPHEMERAL;
+                    }
                 }
                 [diagnostic logDebug:[NSString stringWithFormat:@"Remote notifications authorization status is: %@", status]];
                 [diagnostic sendPluginResultString:status:command];
@@ -149,7 +157,21 @@ static NSString*const REMOTE_NOTIFICATIONS_BADGE = @"badge";
 
             [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
                 UNAuthorizationStatus authStatus = settings.authorizationStatus;
-                if(authStatus == UNAuthorizationStatusNotDetermined){
+                BOOL shouldAskForAuthorization = FALSE;
+                
+                if (authStatus == UNAuthorizationStatusNotDetermined) {
+                    shouldAskForAuthorization = TRUE;
+                } else if(@available(iOS 12,*)) {
+                    if(authStatus == UNAuthorizationStatusProvisional) {
+                        shouldAskForAuthorization = TRUE;
+                    }
+                } else if(@available(iOS 14,*)) {
+                    if(authStatus == UNAuthorizationStatusEphemeral) {
+                        shouldAskForAuthorization = TRUE;
+                    }
+                }
+                
+                if(shouldAskForAuthorization){
                     UNAuthorizationOptions options = UNAuthorizationOptionNone;
                     for(id key in d_options){
                         NSString* s_key = (NSString*) key;
