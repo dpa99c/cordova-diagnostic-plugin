@@ -1,5 +1,5 @@
 {
-    "version": "6.0.3",
+    "version": "6.0.4",
     "name": "cordova.plugins.diagnostic",
     "cordova_name": "Diagnostic",
     "description": "Cordova/Phonegap plugin to check the state of Location/WiFi/Camera/Bluetooth device settings.",
