@@ -22,6 +22,7 @@ package cordova.plugins;
  * Imports
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -37,13 +38,20 @@ import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Diagnostic plugin implementation for Android
  */
 public class Diagnostic_Notifications extends CordovaPlugin{
 
+    private static final String POST_NOTIFICATIONS_PERMISSION = "android.permission.POST_NOTIFICATIONS";
+    private static final int NOTIFICATION_PERMISSIONS_REQ = 8000;
 
     /*************
      * Constants *
@@ -93,10 +101,19 @@ public class Diagnostic_Notifications extends CordovaPlugin{
         Log.d(TAG, "initialize()");
         instance = this;
         diagnostic = Diagnostic.getInstance();
-
+        requestNotificationPermission();
         super.initialize(cordova, webView);
     }
 
+    private void requestNotificationPermission() {
+        List<String> permissions = new ArrayList<>();
+        Activity activity = cordova.getActivity();
+        permissions.add(POST_NOTIFICATIONS_PERMISSION);
+        if (ActivityCompat.checkSelfPermission(activity, POST_NOTIFICATIONS_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        ActivityCompat.requestPermissions(activity, permissions.toArray(new String[]{}), NOTIFICATION_PERMISSIONS_REQ);
+    }
 
     /**
      * Executes the request and returns PluginResult.
