@@ -1625,7 +1625,7 @@ The function is passed a single string parameter containing the error message.
 #### Example usage
 
     cordova.plugins.diagnostic.getLocationAccuracyAuthorization(function(accuracy){
-       switch(status){
+       switch(accuracy){
            case cordova.plugins.diagnostic.locationAccuracyAuthorization.FULL:
                console.log("Full location accuracy is authorized");
                break;
