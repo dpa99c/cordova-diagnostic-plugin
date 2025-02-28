@@ -994,6 +994,30 @@ Returns true if the per-app Mobile Data setting is set to enabled (regardless of
         console.log(`Mobile data is currently ${authorized ? 'authorized' : 'unauthorized'}`);
     });
     
+### deviceSupportsMobileData()
+
+Platforms: iOS
+
+Checks if the device is capable of using mobile data.
+
+Returns true if the device is capable of connecting to mobile data.
+
+    cordova.plugins.diagnostic.deviceSupportsMobileData(successCallback, errorCallback);
+
+#### Parameters
+
+- {Function} successCallback -  The callback which will be called when operation is successful.
+  The function is passed a single boolean parameter which is TRUE if mobile data is authorized.
+- {Function} errorCallback -  The callback which will be called when operation encounters an error.
+  The function is passed a single string parameter containing the error message.
+
+
+#### Example usage
+
+    cordova.plugins.diagnostic.deviceSupportsMobileData(function(authorized){
+        console.log(`Your device ${authorized ? 'does' : 'does not'} have mobile data.`);
+    });
+    
 ### isAccessibilityModeEnabled()
 
 Platforms: Android and iOS

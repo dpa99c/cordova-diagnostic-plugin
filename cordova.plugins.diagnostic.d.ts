@@ -357,6 +357,19 @@ interface Diagnostic {
     ) => void;
 
     /**
+     * IOS ONLY
+     *
+     * Checks if device is capable of using mobile data.
+     *
+     * @param successCallback
+     * @param errorCallback
+     */
+    deviceSupportsMobileData?: (
+        successCallback: () => boolean,
+        errorCallback: (error: string) => void
+    ) => void;
+
+    /**
      *
      * Checks if accessibility mode is enabled on device.
      *

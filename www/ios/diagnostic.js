@@ -170,6 +170,23 @@ var Diagnostic = (function(){
             []);
     };
 
+    /**
+     * Checks if the device is capable of using mobile data.
+     * Returns true if the device is capable of connecting to mobile data.
+     *
+     * @param {Function} successCallback -  The callback which will be called when the operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if mobile data is enabled.
+     * @param {Function} errorCallback -  The callback which will be called when the operation encounters an error.
+     *  This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic.deviceSupportsMobileData = function(successCallback, errorCallback) {
+        return cordova.exec(Diagnostic._ensureBoolean(successCallback),
+            errorCallback,
+            'Diagnostic',
+            'deviceSupportsMobileData',
+            []);
+    };
+
 
     /**
      * Checks if accessibility mode (VoiceOver) is enabled/running on device.
