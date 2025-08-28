@@ -1,5 +1,12 @@
 # CHANGELOG
 
+**v7.2.4**
+* (android & ios) feat: add `isCompassAvailable()` to detect availability of compass for device heading.
+* (doc) update getCameraRollAuthorizationStatus example to include accessLevel parameter
+  * Merged from PR [#532](https://github.com/dpa99c/cordova-diagnostic-plugin/pull/532)
+* (android) fix(Diagnostic_Bluethooth.java): Value null at 0 of type org.json.JSONObject$1 cannot be converted to JSONArray
+  * Merged from PR [#529](https://github.com/dpa99c/cordova-diagnostic-plugin/pull/529)
+
 **v7.2.3**
 * (android) bugfix: dynamically resolve BuildConfig class (and remove hard-coded example app package name) when determining isDebugBuild()
 
