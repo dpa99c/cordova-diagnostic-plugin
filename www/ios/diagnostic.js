@@ -340,6 +340,22 @@ var Diagnostic = (function(){
     };
 
     /**
+     * Checks if compass is available on the device for use by the app.
+     *
+     * @param {Function} successCallback - The callback which will be called when operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if compass is available for use.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic.isCompassAvailable = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.location){
+            cordova.plugins.diagnostic.location.isCompassAvailable.apply(this, arguments);
+        }else{
+            throw "Diagnostic Location module is not installed";
+        }
+    };
+
+    /**
      * Requests location authorization for the application.
      * Authorization can be requested to use location either "when in use" (only in foreground) or "always" (foreground and background).
      * Should only be called if authorization status is NOT_REQUESTED. Calling it when in any other state will have no effect.

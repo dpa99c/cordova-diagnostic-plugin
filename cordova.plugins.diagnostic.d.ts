@@ -201,6 +201,16 @@ interface Diagnostic {
     ) => void;
 
     /**
+     * Checks if app is able to access device heading.
+     * @param successCallback
+     * @param errorCallback
+     */
+    isCompassAvailable: (
+        successCallback: (available: boolean) => void,
+        errorCallback: (error: string) => void
+    ) => void;
+
+    /**
      * Checks if Wifi is available.
      * On iOS this returns true if the device is connected to a network by WiFi.
      * On Android this returns true if the WiFi setting is set to enabled, and is the same as isWifiEnabled()
@@ -235,6 +245,7 @@ interface Diagnostic {
         successCallback: (available: boolean) => void,
         errorCallback: (error: string) => void
     ) => void;
+
 
     /**
      * ANDROID ONLY

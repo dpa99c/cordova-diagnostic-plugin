@@ -31,6 +31,8 @@ import org.json.JSONException;
 
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.util.Log;
@@ -164,7 +166,9 @@ public class Diagnostic_Location extends CordovaPlugin{
                 callbackContext.success(getLocationModeName());
             } else if(action.equals("requestLocationAuthorization")) {
                 requestLocationAuthorization(args, callbackContext);
-            }else {
+            } else if(action.equals("isCompassAvailable")) {
+                callbackContext.success(isCompassAvailable() ? 1 : 0);
+            } else {
                 diagnostic.handleError("Invalid action");
                 return false;
             }
@@ -264,7 +268,13 @@ public class Diagnostic_Location extends CordovaPlugin{
         callbackContext.sendPluginResult(result);
     }
 
-
+    public boolean isCompassAvailable() {
+        SensorManager sensorManager = (SensorManager) this.cordova.getContext().getSystemService(Context.SENSOR_SERVICE);
+        boolean result = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null;
+        // true if device has a magnetic field sensor (magnetometer)
+        diagnostic.logDebug("Compass available: " + result);
+        return result;
+    }
 
     /************
      * Internals

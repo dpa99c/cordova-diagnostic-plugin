@@ -231,6 +231,22 @@ var Diagnostic_Location = (function(){
         Diagnostic_Location._onLocationAccuracyAuthorizationChange = successCallback || function(){};
     };
 
+    /**
+     * Checks if compass is available on the device for use by the app.
+     *
+     * @param {Function} successCallback - The callback which will be called when operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if compass is available for use.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic_Location.isCompassAvailable = function(successCallback, errorCallback) {
+        return cordova.exec(Diagnostic._ensureBoolean(successCallback),
+            errorCallback,
+            'Diagnostic_Location',
+            'isCompassAvailable',
+            []);
+    };
+
     return Diagnostic_Location;
 });
 module.exports = new Diagnostic_Location();

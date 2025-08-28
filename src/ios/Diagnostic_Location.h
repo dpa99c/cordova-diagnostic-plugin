@@ -27,5 +27,6 @@
 - (void) getLocationAccuracyAuthorization: (CDVInvokedUrlCommand*)command;
 - (void) requestLocationAuthorization: (CDVInvokedUrlCommand*)command;
 - (void) requestTemporaryFullAccuracyAuthorization: (CDVInvokedUrlCommand*)command;
+- (void) isCompassAvailable: (CDVInvokedUrlCommand*)command;
 
 @end

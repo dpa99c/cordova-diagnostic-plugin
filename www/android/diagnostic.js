@@ -825,6 +825,22 @@ var Diagnostic = (function(){
         }
     };
 
+    /**
+     * Checks if compass is available on the device for use by the app.
+     *
+     * @param {Function} successCallback - The callback which will be called when operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if compass is available for use.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic.isCompassAvailable = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.location){
+            cordova.plugins.diagnostic.location.isCompassAvailable.apply(this, arguments);
+        }else{
+            throw "Diagnostic Location module is not installed";
+        }
+    };
+
     /************
      * WiFi     *
      ************/

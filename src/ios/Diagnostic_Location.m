@@ -154,6 +154,19 @@ static NSString*const LOG_TAG = @"Diagnostic_Location[native]";
     }];
 }
 
+- (void) isCompassAvailable: (CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        @try {
+            bool isAvailable = [CLLocationManager headingAvailable];
+            [diagnostic sendPluginResultBool:isAvailable :command];
+        }
+        @catch (NSException *exception) {
+            [diagnostic handlePluginException:exception :command];
+        }
+    }];
+}
+
 /********************************/
 #pragma mark - Internals
 /********************************/
