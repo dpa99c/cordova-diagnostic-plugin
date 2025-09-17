@@ -1263,6 +1263,39 @@ interface Diagnostic {
         successCallback: (status: string) => void,
         errorCallback: (error: string) => void
     ) => void;
+
+    /**
+     * iOS ONLY
+     * Checks if the application is authorized to use local network.
+     * @param successCallback
+     * @param errorCallback
+     */
+    isLocalNetworkAuthorized?: (
+        successCallback: (authorized: boolean) => void,
+        errorCallback: (error: string) => void
+    ) => void;
+
+    /**
+     * iOS ONLY
+     * Returns the local network authorization status for the application.
+     * @param successCallback
+     * @param errorCallback
+     */
+    getLocalNetworkAuthorizationStatus?: (
+        successCallback: (status: string) => void,
+        errorCallback: (error: string) => void
+    ) => void;
+
+    /**
+     * iOS ONLY
+     * Requests local network authorization for the application.
+     * @param successCallback
+     * @param errorCallback
+     */
+    requestLocalNetworkAuthorization?: (
+        successCallback: (status: string) => void,
+        errorCallback: (error: string) => void
+    ) => void;
 }
 
 interface CordovaPlugins {

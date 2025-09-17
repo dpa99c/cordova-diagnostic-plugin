@@ -10,10 +10,11 @@
 #import <Cordova/CDVPlugin.h>
 #import "Diagnostic.h"
 
-
-@interface Diagnostic_Wifi : CDVPlugin
+@interface Diagnostic_Wifi : CDVPlugin <NSNetServiceDelegate>
 
 - (void) isWifiAvailable: (CDVInvokedUrlCommand*)command;
 - (void) isWifiEnabled: (CDVInvokedUrlCommand*)command;
+- (void) requestLocalNetworkAuthorization: (CDVInvokedUrlCommand*)command;
+- (void) getLocalNetworkAuthorizationStatus: (CDVInvokedUrlCommand*)command;
 
 @end

@@ -27,6 +27,22 @@ var Diagnostic_Wifi = (function(){
      * Internal functions
      *
      ********************/
+    function processLocalNetworkStatus(nativeStatus, successCallback) {
+        let status;
+        switch (nativeStatus) {
+            case 1: // LocalNetworkPermissionStateGranted
+                status = Diagnostic.permissionStatus.GRANTED;
+                break;
+            case -1: // LocalNetworkPermissionStateDenied
+                status = Diagnostic.permissionStatus.DENIED_ALWAYS;
+                break;
+            case 0: // LocalNetworkPermissionStateUnknown
+            default:
+                status = Diagnostic.permissionStatus.NOT_REQUESTED;
+                break;
+        }
+        successCallback(status);
+    }
 
     /*****************************
      *
@@ -72,6 +88,70 @@ var Diagnostic_Wifi = (function(){
             errorCallback,
             'Diagnostic_Wifi',
             'isWifiEnabled',
+            []);
+    };
+
+    /**
+     * Checks if the app is authorized to use Local Network.
+     * On iOS 14+ this returns true if the user has authorized the app to access devices on the local network.
+     * On iOS versions prior to 14, this always returns true as no authorization is required.
+     *
+     * @param {Function} successCallback -  The callback which will be called when operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if the app is authorized to use Local Network.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic_Wifi.isLocalNetworkAuthorized = function(successCallback, errorCallback) {
+        return cordova.exec(function(status) {
+                var authorized = (status === 1); // LocalNetworkPermissionStateAuthorized
+                successCallback(authorized);
+            },
+            errorCallback,
+            'Diagnostic_Wifi',
+            'getLocalNetworkAuthorizationStatus',
+            []);
+    };
+
+
+    /**     
+     * Returns the app's Local Network authorization status.
+     * On iOS 14+ this returns one of the values in Diagnostic.permissionStatus: NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * On iOS versions prior to 14, this always returns GRANTED as no authorization is required.
+     *
+     * @param {Function} successCallback -  The callback which will be called when operation is successful.
+     * This callback function is passed a single string parameter which is one of the values in Diagnostic.permissionStatus:
+     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic_Wifi.getLocalNetworkAuthorizationStatus = function(successCallback, errorCallback) {
+        return cordova.exec(function(nativeStatus) {
+                processLocalNetworkStatus(nativeStatus, successCallback);
+            },
+            errorCallback,
+            'Diagnostic_Wifi',
+            'getLocalNetworkAuthorizationStatus',
+            []);
+    };
+
+    /**
+     * Requests the user to authorize the app to use Local Network.
+     * On iOS 14+ this will prompt the user to authorize the app to access devices on the local network.
+     * On iOS versions prior to 14, this does nothing as no authorization is required and will return success.
+     *
+     * @param {Function} successCallback -  The callback which will be called when operation is successful.
+     * This callback function is passed a single string parameter which is one of the values in Diagnostic.permissionStatus:
+     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic_Wifi.requestLocalNetworkAuthorization = function(successCallback, errorCallback) {
+        return cordova.exec(function(nativeStatus) {
+                processLocalNetworkStatus(nativeStatus, successCallback);
+            },
+            errorCallback,
+            'Diagnostic_Wifi',
+            'requestLocalNetworkAuthorization',
             []);
     };
 

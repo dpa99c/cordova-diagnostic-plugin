@@ -47,6 +47,8 @@ extern NSString*const AUTHORIZATION_LIMITED;
 - (void) sendPluginResultSuccess:(CDVInvokedUrlCommand*)command;
 - (void) sendPluginNoResultAndKeepCallback:(CDVInvokedUrlCommand*)command;
 - (void) sendPluginResultBool: (BOOL)result :(CDVInvokedUrlCommand*)command;
+- (void) sendPluginResultInt: (int)result :(CDVInvokedUrlCommand*)command;
+- (void) sendPluginResultObject: (NSDictionary*)result :(CDVInvokedUrlCommand*)command;
 - (void) sendPluginResultString: (NSString*)result :(CDVInvokedUrlCommand*)command;
 - (void) sendPluginError: (NSString*) errorMessage :(CDVInvokedUrlCommand*)command;
 - (void) handlePluginException: (NSException*) exception :(CDVInvokedUrlCommand*)command;

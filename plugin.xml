@@ -104,6 +104,17 @@
 
         <header-file src="src/ios/Diagnostic_Wifi.h" />
         <source-file src="src/ios/Diagnostic_Wifi.m" />
+
+        <config-file parent="NSLocalNetworkUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app requires access to your local network in order to discover and connect to devices on the same network.</string>
+        </config-file>
+
+        <config-file parent="NSBonjourServices" platform="ios" target="*-Info.plist">
+            <array>
+                <string>_lnp._tcp.</string>
+                <string>_bonjour._tcp.</string>
+            </array>
+        </config-file>
         <!--END_MODULE WIFI-->
 
         <!--BEGIN_MODULE CAMERA-->

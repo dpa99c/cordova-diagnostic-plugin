@@ -206,145 +206,154 @@ Cordova diagnostic plugin [![Latest Stable Version](https://img.shields.io/npm/v
     - [isWifiEnabled()](#iswifienabled)
       - [Parameters](#parameters-51)
       - [Example usage](#example-usage-51)
-    - [setWifiState()](#setwifistate)
+    - [isLocalNetworkAuthorized()](#islocalnetworkauthorized)
       - [Parameters](#parameters-52)
       - [Example usage](#example-usage-52)
+    - [getLocalNetworkAuthorizationStatus()](#getlocalnetworkauthorizationstatus)
+      - [Parameters](#parameters-53)
+      - [Example usage](#example-usage-53)
+    - [requestLocalNetworkAuthorization()](#requestlocalnetworkauthorization)
+      - [Parameters](#parameters-54)
+      - [Example usage](#example-usage-54)
+    - [setWifiState()](#setwifistate)
+      - [Parameters](#parameters-55)
+      - [Example usage](#example-usage-55)
     - [switchToWifiSettings()](#switchtowifisettings)
   - [Camera module](#camera-module)
     - [isCameraPresent()](#iscamerapresent)
-      - [Parameters](#parameters-53)
-      - [Example usage](#example-usage-53)
-    - [isCameraAvailable()](#iscameraavailable)
-      - [Parameters](#parameters-54)
-      - [Example usage](#example-usage-54)
-    - [isCameraAuthorized()](#iscameraauthorized)
-      - [Parameters](#parameters-55)
-      - [Example usage](#example-usage-55)
-    - [getCameraAuthorizationStatus()](#getcameraauthorizationstatus)
       - [Parameters](#parameters-56)
       - [Example usage](#example-usage-56)
-    - [getCameraAuthorizationStatuses()](#getcameraauthorizationstatuses)
+    - [isCameraAvailable()](#iscameraavailable)
       - [Parameters](#parameters-57)
       - [Example usage](#example-usage-57)
-    - [requestCameraAuthorization()](#requestcameraauthorization)
+    - [isCameraAuthorized()](#iscameraauthorized)
       - [Parameters](#parameters-58)
       - [Example usage](#example-usage-58)
-    - [isCameraRollAuthorized()](#iscamerarollauthorized)
+    - [getCameraAuthorizationStatus()](#getcameraauthorizationstatus)
       - [Parameters](#parameters-59)
       - [Example usage](#example-usage-59)
-    - [getCameraRollAuthorizationStatus()](#getcamerarollauthorizationstatus)
+    - [getCameraAuthorizationStatuses()](#getcameraauthorizationstatuses)
       - [Parameters](#parameters-60)
       - [Example usage](#example-usage-60)
-    - [requestCameraRollAuthorization()](#requestcamerarollauthorization)
+    - [requestCameraAuthorization()](#requestcameraauthorization)
       - [Parameters](#parameters-61)
       - [Example usage](#example-usage-61)
-    - [presentLimitedLibraryPicker()](#presentlimitedlibrarypicker)
+    - [isCameraRollAuthorized()](#iscamerarollauthorized)
       - [Parameters](#parameters-62)
       - [Example usage](#example-usage-62)
+    - [getCameraRollAuthorizationStatus()](#getcamerarollauthorizationstatus)
+      - [Parameters](#parameters-63)
+      - [Example usage](#example-usage-63)
+    - [requestCameraRollAuthorization()](#requestcamerarollauthorization)
+      - [Parameters](#parameters-64)
+      - [Example usage](#example-usage-64)
+    - [presentLimitedLibraryPicker()](#presentlimitedlibrarypicker)
+      - [Parameters](#parameters-65)
+      - [Example usage](#example-usage-65)
   - [Notifications module](#notifications-module)
     - [remoteNotificationType constants](#remotenotificationtype-constants)
       - [Example](#example-4)
     - [isRemoteNotificationsEnabled()](#isremotenotificationsenabled)
-      - [Parameters](#parameters-63)
-      - [Example usage](#example-usage-63)
-    - [isRegisteredForRemoteNotifications()](#isregisteredforremotenotifications)
-      - [Parameters](#parameters-64)
-      - [Example usage](#example-usage-64)
-    - [getRemoteNotificationTypes()](#getremotenotificationtypes)
-      - [Parameters](#parameters-65)
-      - [Example usage](#example-usage-65)
-    - [getRemoteNotificationsAuthorizationStatus()](#getremotenotificationsauthorizationstatus)
       - [Parameters](#parameters-66)
       - [Example usage](#example-usage-66)
-    - [requestRemoteNotificationsAuthorization()](#requestremotenotificationsauthorization)
+    - [isRegisteredForRemoteNotifications()](#isregisteredforremotenotifications)
       - [Parameters](#parameters-67)
       - [Example usage](#example-usage-67)
+    - [getRemoteNotificationTypes()](#getremotenotificationtypes)
+      - [Parameters](#parameters-68)
+      - [Example usage](#example-usage-68)
+    - [getRemoteNotificationsAuthorizationStatus()](#getremotenotificationsauthorizationstatus)
+      - [Parameters](#parameters-69)
+      - [Example usage](#example-usage-69)
+    - [requestRemoteNotificationsAuthorization()](#requestremotenotificationsauthorization)
+      - [Parameters](#parameters-70)
+      - [Example usage](#example-usage-70)
     - [switchToNotificationSettings()](#switchtonotificationsettings)
   - [Microphone module](#microphone-module)
     - [isMicrophoneAuthorized()](#ismicrophoneauthorized)
-      - [Parameters](#parameters-68)
-      - [Example usage](#example-usage-68)
-    - [getMicrophoneAuthorizationStatus()](#getmicrophoneauthorizationstatus)
-      - [Parameters](#parameters-69)
-      - [Example usage](#example-usage-69)
-    - [requestMicrophoneAuthorization()](#requestmicrophoneauthorization)
-      - [Parameters](#parameters-70)
-      - [Example usage](#example-usage-70)
-  - [Contacts module](#contacts-module)
-    - [isContactsAuthorized()](#iscontactsauthorized)
       - [Parameters](#parameters-71)
       - [Example usage](#example-usage-71)
-    - [getContactsAuthorizationStatus()](#getcontactsauthorizationstatus)
+    - [getMicrophoneAuthorizationStatus()](#getmicrophoneauthorizationstatus)
       - [Parameters](#parameters-72)
       - [Example usage](#example-usage-72)
-    - [requestContactsAuthorization()](#requestcontactsauthorization)
+    - [requestMicrophoneAuthorization()](#requestmicrophoneauthorization)
       - [Parameters](#parameters-73)
       - [Example usage](#example-usage-73)
-  - [Calendar module](#calendar-module)
-    - [isCalendarAuthorized()](#iscalendarauthorized)
+  - [Contacts module](#contacts-module)
+    - [isContactsAuthorized()](#iscontactsauthorized)
       - [Parameters](#parameters-74)
       - [Example usage](#example-usage-74)
-    - [getCalendarAuthorizationStatus()](#getcalendarauthorizationstatus)
+    - [getContactsAuthorizationStatus()](#getcontactsauthorizationstatus)
       - [Parameters](#parameters-75)
       - [Example usage](#example-usage-75)
-    - [requestCalendarAuthorization()](#requestcalendarauthorization)
+    - [requestContactsAuthorization()](#requestcontactsauthorization)
       - [Parameters](#parameters-76)
       - [Example usage](#example-usage-76)
-  - [Reminders module](#reminders-module)
-    - [isRemindersAuthorized()](#isremindersauthorized)
+  - [Calendar module](#calendar-module)
+    - [isCalendarAuthorized()](#iscalendarauthorized)
       - [Parameters](#parameters-77)
       - [Example usage](#example-usage-77)
-    - [getRemindersAuthorizationStatus()](#getremindersauthorizationstatus)
+    - [getCalendarAuthorizationStatus()](#getcalendarauthorizationstatus)
       - [Parameters](#parameters-78)
       - [Example usage](#example-usage-78)
-    - [requestRemindersAuthorization()](#requestremindersauthorization)
+    - [requestCalendarAuthorization()](#requestcalendarauthorization)
       - [Parameters](#parameters-79)
       - [Example usage](#example-usage-79)
+  - [Reminders module](#reminders-module)
+    - [isRemindersAuthorized()](#isremindersauthorized)
+      - [Parameters](#parameters-80)
+      - [Example usage](#example-usage-80)
+    - [getRemindersAuthorizationStatus()](#getremindersauthorizationstatus)
+      - [Parameters](#parameters-81)
+      - [Example usage](#example-usage-81)
+    - [requestRemindersAuthorization()](#requestremindersauthorization)
+      - [Parameters](#parameters-82)
+      - [Example usage](#example-usage-82)
   - [Motion module](#motion-module)
     - [motionStatus constants](#motionstatus-constants)
       - [Example](#example-5)
     - [isMotionAvailable()](#ismotionavailable)
-      - [Parameters](#parameters-80)
-      - [Example usage](#example-usage-80)
-    - [isMotionRequestOutcomeAvailable()](#ismotionrequestoutcomeavailable)
-      - [Parameters](#parameters-81)
-      - [Example usage](#example-usage-81)
-    - [requestMotionAuthorization()](#requestmotionauthorization)
-      - [Parameters](#parameters-82)
-      - [Example usage](#example-usage-82)
-    - [getMotionAuthorizationStatus()](#getmotionauthorizationstatus)
       - [Parameters](#parameters-83)
       - [Example usage](#example-usage-83)
+    - [isMotionRequestOutcomeAvailable()](#ismotionrequestoutcomeavailable)
+      - [Parameters](#parameters-84)
+      - [Example usage](#example-usage-84)
+    - [requestMotionAuthorization()](#requestmotionauthorization)
+      - [Parameters](#parameters-85)
+      - [Example usage](#example-usage-85)
+    - [getMotionAuthorizationStatus()](#getmotionauthorizationstatus)
+      - [Parameters](#parameters-86)
+      - [Example usage](#example-usage-86)
   - [NFC module](#nfc-module)
     - [NFCState constants](#nfcstate-constants)
       - [Values](#values-3)
       - [Example](#example-6)
     - [isNFCPresent()](#isnfcpresent)
-      - [Parameters](#parameters-84)
-      - [Example usage](#example-usage-84)
-    - [isNFCEnabled()](#isnfcenabled)
-      - [Parameters](#parameters-85)
-      - [Example usage](#example-usage-85)
-    - [isNFCAvailable()](#isnfcavailable)
-      - [Parameters](#parameters-86)
-      - [Example usage](#example-usage-86)
-    - [registerNFCStateChangeHandler()](#registernfcstatechangehandler)
       - [Parameters](#parameters-87)
       - [Example usage](#example-usage-87)
+    - [isNFCEnabled()](#isnfcenabled)
+      - [Parameters](#parameters-88)
+      - [Example usage](#example-usage-88)
+    - [isNFCAvailable()](#isnfcavailable)
+      - [Parameters](#parameters-89)
+      - [Example usage](#example-usage-89)
+    - [registerNFCStateChangeHandler()](#registernfcstatechangehandler)
+      - [Parameters](#parameters-90)
+      - [Example usage](#example-usage-90)
     - [switchToNFCSettings()](#switchtonfcsettings)
   - [External storage module](#external-storage-module)
     - [isExternalStorageAuthorized()](#isexternalstorageauthorized)
-      - [Parameters](#parameters-88)
-      - [Example usage](#example-usage-88)
-    - [getExternalStorageAuthorizationStatus()](#getexternalstorageauthorizationstatus)
-      - [Parameters](#parameters-89)
-      - [Example usage](#example-usage-89)
-    - [requestExternalStorageAuthorization()](#requestexternalstorageauthorization)
-      - [Parameters](#parameters-90)
-      - [Example usage](#example-usage-90)
-    - [getExternalSdCardDetails()](#getexternalsdcarddetails)
       - [Parameters](#parameters-91)
       - [Example usage](#example-usage-91)
+    - [getExternalStorageAuthorizationStatus()](#getexternalstorageauthorizationstatus)
+      - [Parameters](#parameters-92)
+      - [Example usage](#example-usage-92)
+    - [requestExternalStorageAuthorization()](#requestexternalstorageauthorization)
+      - [Parameters](#parameters-93)
+      - [Example usage](#example-usage-93)
+    - [getExternalSdCardDetails()](#getexternalsdcarddetails)
+      - [Parameters](#parameters-94)
+      - [Example usage](#example-usage-94)
 - [Platform Notes](#platform-notes)
   - [Android](#android-3)
     - [Android permissions](#android-permissions)
@@ -2438,6 +2447,98 @@ The function is passed a single string parameter containing the error message.
 
     cordova.plugins.diagnostic.isWifiEnabled(function(enabled){
         console.log("WiFi is " + (enabled ? "enabled" : "disabled"));
+    }, function(error){
+        console.error("The following error occurred: "+error);
+    });
+
+### isLocalNetworkAuthorized()
+
+Platforms: iOS
+
+Checks if the app is authorised to access devices on the local network (iOS 14+).
+On iOS versions prior to 14 this will always return TRUE as no local network authorization is required.
+
+    cordova.plugins.diagnostic.isLocalNetworkAuthorized(successCallback, errorCallback);
+
+#### Parameters
+
+- {Function} successCallback - The callback which will be called when operation is successful.
+  The function is passed a single boolean parameter which is TRUE if the app is authorised to use the Local Network.
+- {Function} errorCallback - The callback which will be called when operation encounters an error.
+  The function is passed a single string parameter containing the error message.
+
+
+#### Example usage
+
+    cordova.plugins.diagnostic.isLocalNetworkAuthorized(function(authorized){
+        console.log("Local Network is " + (authorized ? "authorized" : "unauthorised"));
+    }, function(error){
+        console.error("The following error occurred: "+error);
+    });
+
+### getLocalNetworkAuthorizationStatus()
+
+Platforms: iOS
+
+Returns the app's Local Network authorization status.
+On iOS 14+ this returns one of the values in `cordova.plugins.diagnostic.permissionStatus`: `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`.
+On iOS versions prior to 14 this will always return `GRANTED` as no authorization is required.
+
+    cordova.plugins.diagnostic.getLocalNetworkAuthorizationStatus(successCallback, errorCallback);
+
+#### Parameters
+
+- {Function} successCallback - The callback which will be called when operation is successful.
+  The function is passed a single string parameter which is one of the values in `cordova.plugins.diagnostic.permissionStatus`:
+  `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`.
+- {Function} errorCallback - The callback which will be called when operation encounters an error.
+  The function is passed a single string parameter containing the error message.
+
+
+#### Example usage
+
+    cordova.plugins.diagnostic.getLocalNetworkAuthorizationStatus(function(status){
+        switch(status){
+            case cordova.plugins.diagnostic.permissionStatus.NOT_REQUESTED:
+                console.log("Local Network permission not requested");
+                break;
+            case cordova.plugins.diagnostic.permissionStatus.DENIED_ALWAYS:
+                console.log("Local Network permission denied");
+                break;
+            case cordova.plugins.diagnostic.permissionStatus.GRANTED:
+                console.log("Local Network permission granted");
+                break;
+        }
+    }, function(error){
+        console.error("The following error occurred: "+error);
+    });
+
+### requestLocalNetworkAuthorization()
+
+Platforms: iOS
+
+Requests the user to authorise the app to access devices on the local network (iOS 14+).
+On iOS versions prior to 14 this does nothing and will return success as no authorization is required.
+
+    cordova.plugins.diagnostic.requestLocalNetworkAuthorization(successCallback, errorCallback);
+
+#### Parameters
+
+- {Function} successCallback - The callback which will be called when operation is successful.
+  The function is passed a single string parameter which is one of the values in `cordova.plugins.diagnostic.permissionStatus`:
+  `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`.
+- {Function} errorCallback - The callback which will be called when operation encounters an error.
+  The function is passed a single string parameter containing the error message.
+
+
+#### Example usage
+
+    cordova.plugins.diagnostic.requestLocalNetworkAuthorization(function(status){
+        if(status === cordova.plugins.diagnostic.permissionStatus.GRANTED){
+            console.log("Local Network access granted");
+        }else{
+            console.log("Local Network access not granted: " + status);
+        }
     }, function(error){
         console.error("The following error occurred: "+error);
     });

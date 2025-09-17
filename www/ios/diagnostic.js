@@ -647,6 +647,62 @@ var Diagnostic = (function(){
         }
     };
 
+    /**
+     * Checks if the app is authorized to use Local Network.
+     * On iOS 14+ this returns true if the user has authorized the app to access devices on the local network.
+     * On iOS versions prior to 14, this always returns true as no authorization is required.
+     *
+     * @param {Function} successCallback -  The callback which will be called when operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if the app is authorized to use Local Network.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic.isLocalNetworkAuthorized = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.wifi){
+            cordova.plugins.diagnostic.wifi.isLocalNetworkAuthorized.apply(this, arguments);
+        }else{
+            throw "Diagnostic Wifi module is not installed";
+        }
+    };
+
+     /**     
+     * Returns the app's Local Network authorization status.
+     * On iOS 14+ this returns one of the values in Diagnostic.permissionStatus: NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * On iOS versions prior to 14, this always returns GRANTED as no authorization is required.
+     *
+     * @param {Function} successCallback -  The callback which will be called when operation is successful.
+     * This callback function is passed a single string parameter which is one of the values in Diagnostic.permissionStatus:
+     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */   
+    Diagnostic.getLocalNetworkAuthorizationStatus = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.wifi){
+            cordova.plugins.diagnostic.wifi.getLocalNetworkAuthorizationStatus.apply(this, arguments);
+        }else{
+            throw "Diagnostic Wifi module is not installed";
+        }
+    };
+
+    /**
+     * Requests the user to authorize the app to use Local Network.
+     * On iOS 14+ this will prompt the user to authorize the app to access devices on the local network.
+     * On iOS versions prior to 14, this does nothing as no authorization is required and will return success.
+     *
+     * @param {Function} successCallback -  The callback which will be called when operation is successful.
+     * This callback function is passed a single string parameter which is one of the values in Diagnostic.permissionStatus:
+     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic.requestLocalNetworkAuthorization = function(successCallback, errorCallback) {
+        if(cordova.plugins.diagnostic.wifi){
+            cordova.plugins.diagnostic.wifi.requestLocalNetworkAuthorization.apply(this, arguments);
+        }else{
+            throw "Diagnostic Wifi module is not installed";
+        }
+    };
+
     /***************
      * Bluetooth   *
      ***************/
