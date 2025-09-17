@@ -1,5 +1,9 @@
 # CHANGELOG
 
+**v7.2.5**
+* (ios) feat: add check/request local network authorization to Wifi module
+  * Resolves [#524](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/524)
+
 **v7.2.4**
 * (android & ios) feat: add `isCompassAvailable()` to detect availability of compass for device heading.
 * (doc) update getCameraRollAuthorizationStatus example to include accessLevel parameter
