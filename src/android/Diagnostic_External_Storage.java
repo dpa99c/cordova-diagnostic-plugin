@@ -231,21 +231,15 @@ public class Diagnostic_External_Storage extends CordovaPlugin{
         }
 
         //Below few lines is to remove paths which may not be external memory card, like OTG (feel free to comment them out)
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (int i = 0; i < results.size(); i++) {
-                if (!results.get(i).toLowerCase().matches(".*[0-9a-f]{4}[-][0-9a-f]{4}.*")) {
-                    diagnostic.logDebug(results.get(i) + " might not be extSDcard");
-                    results.remove(i--);
-                }
-            }
-        } else {
-            for (int i = 0; i < results.size(); i++) {
-                if (!results.get(i).toLowerCase().contains("ext") && !results.get(i).toLowerCase().contains("sdcard")) {
-                    diagnostic.logDebug(results.get(i)+" might not be extSDcard");
-                    results.remove(i--);
-                }
-            }
-        }
+       for (int i = 0; i < results.size(); i++) {
+           String path = results.get(i).toLowerCase();
+           boolean matchesUuidPattern = path.matches(".*[0-9a-f]{4}[-][0-9a-f]{4}.*");
+           boolean containsExtOrSdcard = path.contains("ext") || path.contains("sdcard");
+           if (!matchesUuidPattern && !containsExtOrSdcard) {
+               diagnostic.logDebug(results.get(i) + " might not be extSDcard");
+               results.remove(i--);
+           }
+       }
 
         String[] storageDirectories = new String[results.size()];
         for(int i=0; i<results.size(); ++i) storageDirectories[i] = results.get(i);
