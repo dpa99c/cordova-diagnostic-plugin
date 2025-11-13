@@ -1,5 +1,8 @@
 # CHANGELOG
 
+**v7.2.7**
+(ios) bugfix: Handle DNS PolicyDenied like EPERM for local network permission detection
+
 **v7.2.6**
 * (ios) fix: Local Network status check now accepts a configurable timeout, detects permission denials via NWBrowser errors/NSNetService failures, and returns `UNKNOWN` instead of `DENIED_ALWAYS` when the probe times out. This works around an issue where, if the network stack is under load, local network permission may be falsely reported as denied because iOS fails to resolve the Bonjour service within the default timeout period.
 
