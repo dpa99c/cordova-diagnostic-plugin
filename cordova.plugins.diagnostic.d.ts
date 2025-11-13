@@ -78,6 +78,7 @@ interface Diagnostic {
         "GRANTED_WHEN_IN_USE": "authorized_when_in_use";
         "NOT_REQUESTED": "not_determined"|"NOT_REQUESTED";
         "DENIED_ALWAYS": "denied_always"|"DENIED_ALWAYS";
+        "UNKNOWN": "unknown"|"UNKNOWN";
     };
 
     /**
@@ -1272,7 +1273,10 @@ interface Diagnostic {
      */
     isLocalNetworkAuthorized?: (
         successCallback: (authorized: boolean) => void,
-        errorCallback: (error: string) => void
+        errorCallback: (error: string) => void,
+        options?: {
+            timeoutMs?: number;
+        }
     ) => void;
 
     /**
@@ -1283,7 +1287,10 @@ interface Diagnostic {
      */
     getLocalNetworkAuthorizationStatus?: (
         successCallback: (status: string) => void,
-        errorCallback: (error: string) => void
+        errorCallback: (error: string) => void,
+        options?: {
+            timeoutMs?: number;
+        }
     ) => void;
 
     /**

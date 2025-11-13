@@ -22,6 +22,7 @@ var Diagnostic = (function(){
      */
     Diagnostic.permissionStatus = {
         "NOT_REQUESTED": "not_determined", // App has not yet requested this permission
+        "UNKNOWN": "unknown", // Platform has not provided a definitive status (e.g. timeout/indeterminate)
         "DENIED_ALWAYS": "denied_always", // User denied access to this permission
         "RESTRICTED": "restricted", // Permission is unavailable and user cannot enable it.  For example, when parental controls are in effect for the current user.
         "GRANTED": "authorized", //  User granted access to this permission
@@ -656,8 +657,9 @@ var Diagnostic = (function(){
      * This callback function is passed a single boolean parameter which is TRUE if the app is authorized to use Local Network.
      * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
      * This callback function is passed a single string parameter containing the error message.
+     * @param {Object} [options] - Optional timeout control object containing an optional `timeoutMs` number, matching the options accepted by `getLocalNetworkAuthorizationStatus()`.
      */
-    Diagnostic.isLocalNetworkAuthorized = function(successCallback, errorCallback) {
+    Diagnostic.isLocalNetworkAuthorized = function(successCallback, errorCallback, options) {
         if(cordova.plugins.diagnostic.wifi){
             cordova.plugins.diagnostic.wifi.isLocalNetworkAuthorized.apply(this, arguments);
         }else{
@@ -667,16 +669,18 @@ var Diagnostic = (function(){
 
      /**     
      * Returns the app's Local Network authorization status.
-     * On iOS 14+ this returns one of the values in Diagnostic.permissionStatus: NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * On iOS 14+ this returns one of the values in Diagnostic.permissionStatus: NOT_REQUESTED, GRANTED, DENIED_ALWAYS, UNKNOWN.
      * On iOS versions prior to 14, this always returns GRANTED as no authorization is required.
      *
      * @param {Function} successCallback -  The callback which will be called when operation is successful.
      * This callback function is passed a single string parameter which is one of the values in Diagnostic.permissionStatus:
-     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS, UNKNOWN.
      * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
      * This callback function is passed a single string parameter containing the error message.
+     * @param {Object} [options] - Optional control over the timeout (defaults to 2 seconds) used when inferring the permission state.
+     * Provide `{ timeoutMs: <number> }` to override the timeout in milliseconds.
      */   
-    Diagnostic.getLocalNetworkAuthorizationStatus = function(successCallback, errorCallback) {
+    Diagnostic.getLocalNetworkAuthorizationStatus = function(successCallback, errorCallback, options) {
         if(cordova.plugins.diagnostic.wifi){
             cordova.plugins.diagnostic.wifi.getLocalNetworkAuthorizationStatus.apply(this, arguments);
         }else{
@@ -691,7 +695,7 @@ var Diagnostic = (function(){
      *
      * @param {Function} successCallback -  The callback which will be called when operation is successful.
      * This callback function is passed a single string parameter which is one of the values in Diagnostic.permissionStatus:
-     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS.
+     * NOT_REQUESTED, GRANTED, DENIED_ALWAYS, UNKNOWN.
      * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
      * This callback function is passed a single string parameter containing the error message.
      */

@@ -13,6 +13,7 @@
 #import <net/if.h> // For IFF_LOOPBACK
 #import <Network/Network.h>
 #import <Network/browser.h>
+#import <errno.h>
 
 // UserDefaults key for caching local network permission
 static NSString*const kLocalNetworkPermissionKey = @"Diagnostic_LocalNetworkPermission";
@@ -21,6 +22,7 @@ typedef NS_ENUM(NSInteger, LocalNetworkPermissionState) {
     LocalNetworkPermissionStateUnknown = 0,
     LocalNetworkPermissionStateGranted = 1,
     LocalNetworkPermissionStateDenied = -1,
+    LocalNetworkPermissionStateIndeterminate = -2,
 };
 @implementation Diagnostic_Wifi {
     nw_browser_t _browser;
@@ -41,6 +43,7 @@ static Diagnostic* diagnostic;
 
 // Internal constants
 static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
+static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
 
 - (void)pluginInitialize {
     
@@ -83,6 +86,8 @@ static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
                 return;
             }
 
+            NSTimeInterval timeoutSeconds = [self resolveLocalNetworkTimeoutFromCommand:command];
+
             // Create parameters, and allow browsing over peer-to-peer link.
             if (@available(iOS 14.0, *)) {
                 // Create parameters, and allow browsing over peer-to-peer link.
@@ -101,7 +106,7 @@ static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
                 self->_isRequesting = YES;
                 self->_isPublishing = NO;
 
-               [diagnostic logDebug:@"Starting local network permission status check"];
+               [diagnostic logDebug:[NSString stringWithFormat:@"Starting local network permission status check (timeout %.2fs)", timeoutSeconds]];
                 // Start the browsing/publish flow on the main queue immediately and create a single-shot timeout.
                 dispatch_async(dispatch_get_main_queue(), ^{
                     __weak __typeof__(self) weakSelf = self;
@@ -121,19 +126,11 @@ static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
                     // Install a state handler so the browser emits state changes (silences the warning about missing handlers)
                     if (strongSelf->_browser) {
                         nw_browser_set_state_changed_handler(strongSelf->_browser, ^(nw_browser_state_t newState, nw_error_t error) {
-                            switch (newState) {
-                                case nw_browser_state_failed:
-                                    if (error) {
-                                        nw_error_domain_t errorDomain = nw_error_get_error_domain(error);
-                                        [diagnostic logDebug:[NSString stringWithFormat:@"Browser failed (status check): domain=%d", (int)errorDomain]];
-                                    }
-                                    break;
-                                case nw_browser_state_ready:
-                                case nw_browser_state_cancelled:
-                                case nw_browser_state_waiting:
-                                default:
-                                    break;
+                            __strong __typeof__(weakSelf) innerSelf = weakSelf;
+                            if (!innerSelf) {
+                                return;
                             }
+                            [innerSelf handleBrowserState:newState error:error context:@"status check"];
                         });
 
                         nw_browser_start(strongSelf->_browser);
@@ -144,17 +141,17 @@ static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
                     [strongSelf->_netService publish];
                     [strongSelf->_netService scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
-                    // Set a single-shot timeout to consider the permission request failed
-                    strongSelf->_localNetworkTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
-                                                                                       repeats:NO
-                                                                                         block:^(NSTimer * _Nonnull timer) {
-                        __strong __typeof__(weakSelf) innerSelf = weakSelf;
-                        if (!innerSelf) return;
+                    if (timeoutSeconds > 0) {
+                        strongSelf->_localNetworkTimer = [NSTimer scheduledTimerWithTimeInterval:timeoutSeconds
+                                                                                           repeats:NO
+                                                                                             block:^(NSTimer * _Nonnull timer) {
+                            __strong __typeof__(weakSelf) innerSelf = weakSelf;
+                            if (!innerSelf) return;
 
-                        [diagnostic logDebug:@"Local network permission request timed out"];
-                        [self callLocalNetworkCallbacks:LocalNetworkPermissionStateDenied];
-                        [innerSelf resetLocalNetwork];
-                    }];
+                            [diagnostic logDebug:[NSString stringWithFormat:@"Local network permission status check timed out after %.2fs", timeoutSeconds]];
+                            [innerSelf completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+                        }];
+                    }
                 });
             }else{
                 [diagnostic logDebug:@"iOS version < 14.0, so local network permission is not required"];
@@ -199,33 +196,10 @@ static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
                 __weak __typeof__(self) weakSelf = self;
                 nw_browser_set_state_changed_handler(self->_browser, ^(nw_browser_state_t newState, nw_error_t error) {
                     __strong __typeof__(weakSelf) strongSelf = weakSelf;
-                    switch (newState) {
-                        case nw_browser_state_failed:
-                            if (error) {
-                                nw_error_domain_t errorDomain = nw_error_get_error_domain(error);
-                                [diagnostic logDebug:[NSString stringWithFormat:@"Browser failed: domain=%d", (int)errorDomain]];
-                            }
-                            break;
-                        case nw_browser_state_ready:
-                        case nw_browser_state_cancelled:
-                            break;
-                        case nw_browser_state_waiting:
-                            if (error) {
-                                nw_error_domain_t errorDomain = nw_error_get_error_domain(error);
-                                [diagnostic logDebug:[NSString stringWithFormat:@"Local network permission has been denied: domain=%d", (int)errorDomain]];
-                            } else {
-                                [diagnostic logDebug:@"Local network permission has been denied"];
-                            }
-                            [strongSelf resetLocalNetwork];
-                            // cache denied
-                            [[NSUserDefaults standardUserDefaults] setInteger:LocalNetworkPermissionStateDenied forKey:kLocalNetworkPermissionKey];
-                            [[NSUserDefaults standardUserDefaults] synchronize];
-                            // send false result to all waiting commands
-                            [self callLocalNetworkCallbacks:LocalNetworkPermissionStateDenied];
-                            break;
-                        default:
-                            break;
+                    if (!strongSelf) {
+                        return;
                     }
+                    [strongSelf handleBrowserState:newState error:error context:@"authorization request"];
                 });
                 
                 self->_netService = [[NSNetService alloc] initWithDomain:@"local." type:@"_lnp._tcp." name:@"LocalNetworkPrivacy" port:1100];
@@ -278,6 +252,85 @@ static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
             [diagnostic sendPluginResultInt:(int)result :c];
         }
         [self->_localNetworkCommands removeAllObjects];
+    }
+}
+
+- (void)completeLocalNetworkFlowWithState:(LocalNetworkPermissionState)state shouldCache:(BOOL)shouldCache
+{
+    dispatch_block_t completion = ^{
+        [self resetLocalNetwork];
+        if (shouldCache && (state == LocalNetworkPermissionStateGranted || state == LocalNetworkPermissionStateDenied)) {
+            [[NSUserDefaults standardUserDefaults] setInteger:state forKey:kLocalNetworkPermissionKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        [self callLocalNetworkCallbacks:state];
+    };
+
+    if ([NSThread isMainThread]) {
+        completion();
+    } else {
+        dispatch_async(dispatch_get_main_queue(), completion);
+    }
+}
+
+- (NSTimeInterval)resolveLocalNetworkTimeoutFromCommand:(CDVInvokedUrlCommand*)command
+{
+    NSTimeInterval timeout = kLocalNetworkDefaultTimeoutSeconds;
+    if (!command || !command.arguments || command.arguments.count == 0) {
+        return timeout;
+    }
+
+    id rawValue = command.arguments[0];
+    if (![rawValue isKindOfClass:[NSDictionary class]]) {
+        return timeout;
+    }
+
+    NSDictionary *dict = (NSDictionary *)rawValue;
+    id timeoutMsValue = dict[@"timeoutMs"];
+    if ([timeoutMsValue isKindOfClass:[NSNumber class]]) {
+        double milliseconds = [timeoutMsValue doubleValue];
+        if (milliseconds < 0) {
+            milliseconds = 0;
+        }
+        return milliseconds / 1000.0;
+    }
+
+    return timeout;
+}
+
+- (BOOL)isPermissionDeniedError:(nw_error_t)error
+{
+    if (!error) {
+        return NO;
+    }
+
+    nw_error_domain_t errorDomain = nw_error_get_error_domain(error);
+    int errorCode = (int)nw_error_get_error_code(error);
+    return (errorDomain == nw_error_domain_posix && errorCode == EPERM);
+}
+
+- (void)handleBrowserState:(nw_browser_state_t)newState error:(nw_error_t)error context:(NSString *)context
+{
+    if (newState == nw_browser_state_waiting || newState == nw_browser_state_failed) {
+        if ([self isPermissionDeniedError:error]) {
+            nw_error_domain_t domain = nw_error_get_error_domain(error);
+            int code = (int)nw_error_get_error_code(error);
+            [diagnostic logDebug:[NSString stringWithFormat:@"Local network permission denied during %@ (domain=%d, code=%d)", context, (int)domain, code]];
+            [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateDenied shouldCache:YES];
+            return;
+        }
+
+        if (error) {
+            nw_error_domain_t domain = nw_error_get_error_domain(error);
+            int code = (int)nw_error_get_error_code(error);
+            [diagnostic logDebug:[NSString stringWithFormat:@"Local network browser %@ state %ld error domain=%d code=%d", context, (long)newState, (int)domain, code]];
+        } else {
+            [diagnostic logDebug:[NSString stringWithFormat:@"Local network browser %@ entered state %ld without error", context, (long)newState]];
+        }
+
+        if (newState == nw_browser_state_failed) {
+            [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+        }
     }
 }
 
@@ -365,17 +418,13 @@ static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
 
 - (void)netServiceDidPublish:(NSNetService *)sender {
     [diagnostic logDebug:@"netServiceDidPublish: Local network permission has been granted"];
-    [self resetLocalNetwork];
-    if (_localNetworkTimer) {
-        [_localNetworkTimer invalidate];
-        _localNetworkTimer = nil;
-    }
-    _isPublishing = NO;
-    
-    // cache granted
-    [[NSUserDefaults standardUserDefaults] setInteger:LocalNetworkPermissionStateGranted forKey:kLocalNetworkPermissionKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateGranted shouldCache:YES];
+}
 
-    [self callLocalNetworkCallbacks:LocalNetworkPermissionStateGranted];
+- (void)netService:(NSNetService *)sender didNotPublish:(NSDictionary<NSString *,NSNumber *> *)errorDict {
+    NSNumber *errorDomain = errorDict[NSNetServicesErrorDomain];
+    NSNumber *errorCode = errorDict[NSNetServicesErrorCode];
+    [diagnostic logDebug:[NSString stringWithFormat:@"netService didNotPublish (domain=%@, code=%@)", errorDomain, errorCode]];
+    [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateDenied shouldCache:YES];
 }
 @end

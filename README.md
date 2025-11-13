@@ -648,6 +648,9 @@ Addtionally, for notifications permissions:
 - `PROVISIONAL` - The app is provisionally authorized to post non-interruptive user notifications.
 - `EPHEMERAL` - The app is authorized to schedule or receive notifications for a limited amount of time.
 
+For cases where the platform cannot return a definitive answer, the plugin also exposes:
+- `UNKNOWN` (Android and iOS) - Returned when the underlying OS has not yet provided a concrete status (for example, if an iOS Local Network probe timed out). Treat this as a transient state and retry before surfacing a denial to the user.
+
 #### Example
 
     if(somePermissionStatus === cordova.plugins.diagnostic.permissionStatus.GRANTED){
@@ -2457,6 +2460,7 @@ Platforms: iOS
 
 Checks if the app is authorised to access devices on the local network (iOS 14+).
 On iOS versions prior to 14 this will always return TRUE as no local network authorization is required.
+An optional third argument allows you to override the fallback timeout (defaults to 2 seconds) by passing `{ timeoutMs: <number> }`.
 
     cordova.plugins.diagnostic.isLocalNetworkAuthorized(successCallback, errorCallback);
 
@@ -2466,6 +2470,7 @@ On iOS versions prior to 14 this will always return TRUE as no local network aut
   The function is passed a single boolean parameter which is TRUE if the app is authorised to use the Local Network.
 - {Function} errorCallback - The callback which will be called when operation encounters an error.
   The function is passed a single string parameter containing the error message.
+- {Object} [options] - Optional timeout control object. Provide `timeoutMs` (milliseconds) to override the default 2000 ms timeout.
 
 
 #### Example usage
@@ -2476,12 +2481,25 @@ On iOS versions prior to 14 this will always return TRUE as no local network aut
         console.error("The following error occurred: "+error);
     });
 
+To wait longer before treating a slow response as indeterminate:
+
+```
+cordova.plugins.diagnostic.isLocalNetworkAuthorized(
+    function(authorized){
+        console.log("Local Network authorized? " + authorized);
+    },
+    console.error,
+    { timeoutMs: 8000 }
+);
+```
+
 ### getLocalNetworkAuthorizationStatus()
 
 Platforms: iOS
 
 Returns the app's Local Network authorization status.
-On iOS 14+ this returns one of the values in `cordova.plugins.diagnostic.permissionStatus`: `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`.
+On iOS 14+ this returns one of the values in `cordova.plugins.diagnostic.permissionStatus`: `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`, `UNKNOWN`.
+`UNKNOWN` indicates that iOS did not return a definitive answer before the timeout elapsed, so the app can retry before warning the user.
 On iOS versions prior to 14 this will always return `GRANTED` as no authorization is required.
 
     cordova.plugins.diagnostic.getLocalNetworkAuthorizationStatus(successCallback, errorCallback);
@@ -2490,9 +2508,10 @@ On iOS versions prior to 14 this will always return `GRANTED` as no authorizatio
 
 - {Function} successCallback - The callback which will be called when operation is successful.
   The function is passed a single string parameter which is one of the values in `cordova.plugins.diagnostic.permissionStatus`:
-  `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`.
+  `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`, `UNKNOWN`.
 - {Function} errorCallback - The callback which will be called when operation encounters an error.
   The function is passed a single string parameter containing the error message.
+- {Object} [options] - Optional timeout override (defaults to 2 seconds). Provide `timeoutMs` (milliseconds) to customize the fallback duration.
 
 
 #### Example usage
@@ -2504,6 +2523,9 @@ On iOS versions prior to 14 this will always return `GRANTED` as no authorizatio
                 break;
             case cordova.plugins.diagnostic.permissionStatus.DENIED_ALWAYS:
                 console.log("Local Network permission denied");
+                break;
+            case cordova.plugins.diagnostic.permissionStatus.UNKNOWN:
+                console.log("Local Network permission could not be determined (retry recommended)");
                 break;
             case cordova.plugins.diagnostic.permissionStatus.GRANTED:
                 console.log("Local Network permission granted");
@@ -2519,6 +2541,7 @@ Platforms: iOS
 
 Requests the user to authorise the app to access devices on the local network (iOS 14+).
 On iOS versions prior to 14 this does nothing and will return success as no authorization is required.
+May return `UNKNOWN` if iOS does not respond before the native APIs time out, allowing the app to retry.
 
     cordova.plugins.diagnostic.requestLocalNetworkAuthorization(successCallback, errorCallback);
 
@@ -2526,7 +2549,7 @@ On iOS versions prior to 14 this does nothing and will return success as no auth
 
 - {Function} successCallback - The callback which will be called when operation is successful.
   The function is passed a single string parameter which is one of the values in `cordova.plugins.diagnostic.permissionStatus`:
-  `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`.
+  `NOT_REQUESTED`, `GRANTED`, `DENIED_ALWAYS`, `UNKNOWN`.
 - {Function} errorCallback - The callback which will be called when operation encounters an error.
   The function is passed a single string parameter containing the error message.
 
@@ -2536,6 +2559,8 @@ On iOS versions prior to 14 this does nothing and will return success as no auth
     cordova.plugins.diagnostic.requestLocalNetworkAuthorization(function(status){
         if(status === cordova.plugins.diagnostic.permissionStatus.GRANTED){
             console.log("Local Network access granted");
+        }else if(status === cordova.plugins.diagnostic.permissionStatus.UNKNOWN){
+            console.log("Local Network status could not be determined, retrying may succeed");
         }else{
             console.log("Local Network access not granted: " + status);
         }

@@ -89,6 +89,8 @@ var Diagnostic = (function(){
         "DENIED_ALWAYS": "DENIED_ALWAYS",
         // App has not yet requested access to this permission.
         "NOT_REQUESTED": "NOT_REQUESTED",
+        // Platform has not provided a definitive status (e.g. timeout/indeterminate)
+        "UNKNOWN": "unknown",
         // Limited access to the photo library on Android 14 (API 34) and above
         "LIMITED": "LIMITED"
     };
