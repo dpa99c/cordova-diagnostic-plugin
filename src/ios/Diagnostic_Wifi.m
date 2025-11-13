@@ -13,6 +13,7 @@
 #import <net/if.h> // For IFF_LOOPBACK
 #import <Network/Network.h>
 #import <Network/browser.h>
+#import <dns_sd.h>
 #import <errno.h>
 
 // UserDefaults key for caching local network permission
@@ -300,13 +301,21 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
 
 - (BOOL)isPermissionDeniedError:(nw_error_t)error
 {
-    if (!error) {
-        return NO;
-    }
+	if (!error) {
+		return NO;
+	}
 
-    nw_error_domain_t errorDomain = nw_error_get_error_domain(error);
-    int errorCode = (int)nw_error_get_error_code(error);
-    return (errorDomain == nw_error_domain_posix && errorCode == EPERM);
+	nw_error_domain_t errorDomain = nw_error_get_error_domain(error);
+	int errorCode = (int)nw_error_get_error_code(error);
+	if (errorDomain == nw_error_domain_posix && errorCode == EPERM) {
+		return YES;
+	}
+
+	if (errorDomain == nw_error_domain_dns && errorCode == kDNSServiceErr_PolicyDenied) {
+		return YES;
+	}
+
+	return NO;
 }
 
 - (void)handleBrowserState:(nw_browser_state_t)newState error:(nw_error_t)error context:(NSString *)context
