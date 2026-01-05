@@ -1,5 +1,8 @@
 # CHANGELOG
 
+**v7.2.8**
+(ios) bugfix: Avoid reporting false-positive Local Network Permission Denied by returning indeterminate result, instead of denied, if NSNetService publish fails with an error, as it can fail for reasons other than permission denied.
+
 **v7.2.7**
 (ios) bugfix: Handle DNS PolicyDenied like EPERM for local network permission detection
 
