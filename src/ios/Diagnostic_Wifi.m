@@ -434,6 +434,10 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
     NSNumber *errorDomain = errorDict[NSNetServicesErrorDomain];
     NSNumber *errorCode = errorDict[NSNetServicesErrorCode];
     [diagnostic logDebug:[NSString stringWithFormat:@"netService didNotPublish (domain=%@, code=%@)", errorDomain, errorCode]];
-    [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateDenied shouldCache:YES];
+    // NSNetService can fail to publish for many reasons unrelated to permissions (network issues,
+    // name collisions, configuration problems, etc.). We cannot reliably determine permission denial
+    // from NSNetService error codes alone, so return indeterminate. The browser state handler in
+    // handleBrowserState will catch actual permission denials via isPermissionDeniedError.
+    [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
 }
 @end
