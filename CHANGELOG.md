@@ -1,5 +1,12 @@
 # CHANGELOG
 
+**v7.2.9**
+(ios) crashfix: Refactored local-network permission flow to use one deterministic start path with guarded callback handling:
+- Consolidated duplicated browse/publish start logic into a single helper used by both status and authorisation APIs.
+- Added uniform exception guards and fallback completion for asynchronous callback and delegate execution paths.
+- Added synchronised request-state transitions and consistent timeout handling to reduce overlapping or stuck requests.
+
+
 **v7.2.8**
 (ios) bugfix: Avoid reporting false-positive Local Network Permission Denied by returning indeterminate result, instead of denied, if NSNetService publish fails with an error, as it can fail for reasons other than permission denied.
 
