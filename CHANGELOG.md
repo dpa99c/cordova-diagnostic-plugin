@@ -1,5 +1,8 @@
 # CHANGELOG
 
+**v7.2.10**
+(ios) feat: support optional specification of desired location accuracy when requesting location accuracy permission.
+
 **v7.2.9**
 (ios) crashfix: Refactored local-network permission flow to use one deterministic start path with guarded callback handling:
 - Consolidated duplicated browse/publish start logic into a single helper used by both status and authorisation APIs.
