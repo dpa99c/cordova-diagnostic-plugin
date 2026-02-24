@@ -44,7 +44,12 @@ static Diagnostic* diagnostic;
 
 // Internal constants
 static NSString*const LOG_TAG = @"Diagnostic_Wifi[native]";
-static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
+static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 30.0; // Default timeout for local network permission flow, after which we'll return indeterminate if we haven't received a response. This is needed to prevent hanging requests in cases where delegate callbacks are not fired (e.g. due to iOS bugs or edge-case network conditions).
+static const char* kLocalNetworkBonjourServiceTypeBrowse = "_lnp._tcp";
+static NSString*const kLocalNetworkBonjourServiceTypePublish = @"_lnp._tcp.";
+static NSString*const kLocalNetworkBonjourServiceDomain = @"local.";
+static NSString*const kLocalNetworkBonjourServiceName = @"LocalNetworkPrivacy";
+static NSInteger const kLocalNetworkBonjourServicePort = 1100;
 
 - (void)pluginInitialize {
     
@@ -81,7 +86,17 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
                 [self->_localNetworkCommands addObject:command];
             }
 
-            if(self->_isRequesting){
+            BOOL requestInProgress = NO;
+            @synchronized(self) {
+                if (self->_isRequesting) {
+                    requestInProgress = YES;
+                } else {
+                    self->_isRequesting = YES;
+                    self->_isPublishing = NO;
+                }
+            }
+
+            if(requestInProgress){
                 // A request is already in progress so await the result
                 [diagnostic logDebug:@"A request is already in progress, will return result when done"];
                 return;
@@ -89,74 +104,12 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
 
             NSTimeInterval timeoutSeconds = [self resolveLocalNetworkTimeoutFromCommand:command];
 
-            // Create parameters, and allow browsing over peer-to-peer link.
             if (@available(iOS 14.0, *)) {
-                // Create parameters, and allow browsing over peer-to-peer link.
-                nw_parameters_t parameters = nw_parameters_create_secure_tcp(NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
-                nw_parameters_set_include_peer_to_peer(parameters, true);
-                
-                // Browse for a custom service type.
-                nw_browse_descriptor_t descriptor =
-                nw_browse_descriptor_create_bonjour_service("_bonjour._tcp", NULL);
-                self->_browser = nw_browser_create(descriptor, parameters);
-                
-                nw_browser_set_queue(self->_browser, dispatch_get_main_queue());
-                
-                self->_netService = [[NSNetService alloc] initWithDomain:@"local." type:@"_lnp._tcp." name:@"LocalNetworkPrivacy" port:1100];
-                
-                self->_isRequesting = YES;
-                self->_isPublishing = NO;
-
-               [diagnostic logDebug:[NSString stringWithFormat:@"Starting local network permission status check (timeout %.2fs)", timeoutSeconds]];
-                // Start the browsing/publish flow on the main queue immediately and create a single-shot timeout.
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    __weak __typeof__(self) weakSelf = self;
-
-                    __strong __typeof__(weakSelf) strongSelf = weakSelf;
-                    if (!strongSelf) return;
-
-                    // Ensure we only start once for this check
-                    if (strongSelf->_isPublishing) {
-                        [diagnostic logDebug:@"Local network permission request already publishing, skipping start"];
-                        return;
-                    }
-
-                    strongSelf->_isPublishing = YES;
-                    strongSelf->_netService.delegate = strongSelf;
-
-                    // Install a state handler so the browser emits state changes (silences the warning about missing handlers)
-                    if (strongSelf->_browser) {
-                        nw_browser_set_state_changed_handler(strongSelf->_browser, ^(nw_browser_state_t newState, nw_error_t error) {
-                            __strong __typeof__(weakSelf) innerSelf = weakSelf;
-                            if (!innerSelf) {
-                                return;
-                            }
-                            [innerSelf handleBrowserState:newState error:error context:@"status check"];
-                        });
-
-                        nw_browser_start(strongSelf->_browser);
-                    } else {
-                        [diagnostic logDebug:@"Attempted to start browser but browser is null"];
-                    }
-
-                    [strongSelf->_netService publish];
-                    [strongSelf->_netService scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-
-                    if (timeoutSeconds > 0) {
-                        strongSelf->_localNetworkTimer = [NSTimer scheduledTimerWithTimeInterval:timeoutSeconds
-                                                                                           repeats:NO
-                                                                                             block:^(NSTimer * _Nonnull timer) {
-                            __strong __typeof__(weakSelf) innerSelf = weakSelf;
-                            if (!innerSelf) return;
-
-                            [diagnostic logDebug:[NSString stringWithFormat:@"Local network permission status check timed out after %.2fs", timeoutSeconds]];
-                            [innerSelf completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
-                        }];
-                    }
-                });
+                [diagnostic logDebug:[NSString stringWithFormat:@"Starting local network permission status check (timeout %.2fs)", timeoutSeconds]];
+                [self startLocalNetworkAuthorizationFlowWithTimeout:timeoutSeconds context:@"status check"];
             }else{
                 [diagnostic logDebug:@"iOS version < 14.0, so local network permission is not required"];
-                [self callLocalNetworkCallbacks:LocalNetworkPermissionStateGranted];
+                [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateGranted shouldCache:YES];
             }
         }
         @catch (NSException *exception) {
@@ -170,12 +123,21 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
 {
     [self.commandDelegate runInBackground:^{
         @try {
-            if(self->_isRequesting){
+            BOOL requestInProgress = NO;
+            @synchronized(self) {
+                if (self->_isRequesting) {
+                    requestInProgress = YES;
+                } else {
+                    self->_isRequesting = YES;
+                    self->_isPublishing = NO;
+                }
+            }
+
+            if(requestInProgress){
                 // A request is already in progress
                 [diagnostic sendPluginError:@"A request is already in progress" :command];
                 return;
             }
-            self->_isRequesting = YES;
 
             // Store command so we can send the result later
             @synchronized(self->_localNetworkCommands) {
@@ -183,37 +145,11 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
             }
             
             if (@available(iOS 14.0, *)) {
-                // Create parameters, and allow browsing over peer-to-peer link.
-                nw_parameters_t parameters = nw_parameters_create_secure_tcp(NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
-                nw_parameters_set_include_peer_to_peer(parameters, true);
-                
-                // Browse for a custom service type.
-                nw_browse_descriptor_t descriptor =
-                nw_browse_descriptor_create_bonjour_service("_bonjour._tcp", NULL);
-                self->_browser = nw_browser_create(descriptor, parameters);
-                
-                nw_browser_set_queue(self->_browser, dispatch_get_main_queue());
-                
-                __weak __typeof__(self) weakSelf = self;
-                nw_browser_set_state_changed_handler(self->_browser, ^(nw_browser_state_t newState, nw_error_t error) {
-                    __strong __typeof__(weakSelf) strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    [strongSelf handleBrowserState:newState error:error context:@"authorization request"];
-                });
-                
-                self->_netService = [[NSNetService alloc] initWithDomain:@"local." type:@"_lnp._tcp." name:@"LocalNetworkPrivacy" port:1100];
-                self->_netService.delegate = self;
-                
-                // Start browsing on main queue
-                nw_browser_start(self->_browser);
-                [self->_netService publish];
-                // the netService needs to be scheduled on a run loop, in this case the main runloop
-                [self->_netService scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+                [diagnostic logDebug:[NSString stringWithFormat:@"Starting local network authorization request (timeout %.2fs)", kLocalNetworkDefaultTimeoutSeconds]];
+                [self startLocalNetworkAuthorizationFlowWithTimeout:kLocalNetworkDefaultTimeoutSeconds context:@"authorization request"];
             }else{
                 // iOS version < 14.0, so local network permission is not required
-                [self callLocalNetworkCallbacks:LocalNetworkPermissionStateGranted];
+                [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateGranted shouldCache:YES];
             }
         } @catch (NSException *exception) {
             [diagnostic handlePluginException:exception :command];
@@ -259,12 +195,14 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
 - (void)completeLocalNetworkFlowWithState:(LocalNetworkPermissionState)state shouldCache:(BOOL)shouldCache
 {
     dispatch_block_t completion = ^{
-        [self resetLocalNetwork];
-        if (shouldCache && (state == LocalNetworkPermissionStateGranted || state == LocalNetworkPermissionStateDenied)) {
-            [[NSUserDefaults standardUserDefaults] setInteger:state forKey:kLocalNetworkPermissionKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
-        [self callLocalNetworkCallbacks:state];
+        [self performLocalNetworkCallbackSafelyWithContext:@"flow completion" block:^{
+            [self resetLocalNetwork];
+            if (shouldCache && (state == LocalNetworkPermissionStateGranted || state == LocalNetworkPermissionStateDenied)) {
+                [[NSUserDefaults standardUserDefaults] setInteger:state forKey:kLocalNetworkPermissionKey];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+            [self callLocalNetworkCallbacks:state];
+        }];
     };
 
     if ([NSThread isMainThread]) {
@@ -297,6 +235,136 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
     }
 
     return timeout;
+}
+
+- (void)handleLocalNetworkCallbackException:(NSException *)exception context:(NSString *)context
+{
+    NSString *resolvedContext = context ?: @"local network callback";
+    NSString *reason = exception.reason ?: @"No reason provided";
+    [diagnostic logDebug:[NSString stringWithFormat:@"Caught exception in %@: %@ (%@)", resolvedContext, exception.name, reason]];
+
+    [self resetLocalNetwork];
+
+    @try {
+        [self callLocalNetworkCallbacks:LocalNetworkPermissionStateIndeterminate];
+    }
+    @catch (NSException *fallbackException) {
+        NSString *fallbackReason = fallbackException.reason ?: @"No reason provided";
+        [diagnostic logDebug:[NSString stringWithFormat:@"Failed to send fallback local network callback after %@: %@ (%@)", resolvedContext, fallbackException.name, fallbackReason]];
+    }
+}
+
+- (void)performLocalNetworkCallbackSafelyWithContext:(NSString *)context block:(dispatch_block_t)block
+{
+    @try {
+        if (block) {
+            block();
+        }
+    }
+    @catch (NSException *exception) {
+        [self handleLocalNetworkCallbackException:exception context:context];
+    }
+}
+
+- (void)startLocalNetworkAuthorizationFlowWithTimeout:(NSTimeInterval)timeoutSeconds context:(NSString *)context
+{
+    dispatch_block_t startFlow = ^{
+        NSString *operationContext = context ?: @"local network authorisation";
+        [self performLocalNetworkCallbackSafelyWithContext:[NSString stringWithFormat:@"%@ setup", operationContext] block:^{
+            if (!self->_isRequesting) {
+                [diagnostic logDebug:[NSString stringWithFormat:@"Ignoring %@ start because there is no active request", operationContext]];
+                return;
+            }
+
+            if (self->_isPublishing) {
+                [diagnostic logDebug:@"Local network permission request already publishing, skipping start"];
+                return;
+            }
+
+            // Cancel any stale timer before starting a fresh flow.
+            if (self->_localNetworkTimer) {
+                [self->_localNetworkTimer invalidate];
+                self->_localNetworkTimer = nil;
+            }
+
+            nw_parameters_t parameters = nw_parameters_create_secure_tcp(NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
+            if (!parameters) {
+                [diagnostic logDebug:[NSString stringWithFormat:@"Failed to create network parameters for %@", operationContext]];
+                [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+                return;
+            }
+
+            nw_parameters_set_include_peer_to_peer(parameters, true);
+
+            nw_browse_descriptor_t descriptor = nw_browse_descriptor_create_bonjour_service(kLocalNetworkBonjourServiceTypeBrowse, NULL);
+            if (!descriptor) {
+                [diagnostic logDebug:[NSString stringWithFormat:@"Failed to create browse descriptor for %@", operationContext]];
+                [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+                return;
+            }
+
+            nw_browser_t browser = nw_browser_create(descriptor, parameters);
+            if (!browser) {
+                [diagnostic logDebug:[NSString stringWithFormat:@"Failed to create browser for %@", operationContext]];
+                [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+                return;
+            }
+
+            NSNetService *netService = [[NSNetService alloc] initWithDomain:kLocalNetworkBonjourServiceDomain
+                                                                        type:kLocalNetworkBonjourServiceTypePublish
+                                                                        name:kLocalNetworkBonjourServiceName
+                                                                        port:(int)kLocalNetworkBonjourServicePort];
+            if (!netService) {
+                [diagnostic logDebug:[NSString stringWithFormat:@"Failed to create net service for %@", operationContext]];
+                [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+                return;
+            }
+
+            self->_browser = browser;
+            self->_netService = netService;
+            self->_netService.delegate = self;
+            self->_isPublishing = YES;
+
+            __weak __typeof__(self) weakSelf = self;
+            nw_browser_set_queue(browser, dispatch_get_main_queue());
+            nw_browser_set_state_changed_handler(browser, ^(nw_browser_state_t newState, nw_error_t error) {
+                __strong __typeof__(weakSelf) strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
+                }
+
+                [strongSelf performLocalNetworkCallbackSafelyWithContext:[NSString stringWithFormat:@"%@ browser state", operationContext] block:^{
+                    [strongSelf handleBrowserState:newState error:error context:operationContext];
+                }];
+            });
+
+            nw_browser_start(browser);
+            [netService publish];
+            [netService scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+
+            if (timeoutSeconds > 0) {
+                self->_localNetworkTimer = [NSTimer scheduledTimerWithTimeInterval:timeoutSeconds
+                                                                            repeats:NO
+                                                                              block:^(NSTimer * _Nonnull timer) {
+                    __strong __typeof__(weakSelf) strongSelf = weakSelf;
+                    if (!strongSelf) {
+                        return;
+                    }
+
+                    [strongSelf performLocalNetworkCallbackSafelyWithContext:[NSString stringWithFormat:@"%@ timeout", operationContext] block:^{
+                        [diagnostic logDebug:[NSString stringWithFormat:@"Local network %@ timed out after %.2fs", operationContext, timeoutSeconds]];
+                        [strongSelf completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+                    }];
+                }];
+            }
+        }];
+    };
+
+    if ([NSThread isMainThread]) {
+        startFlow();
+    } else {
+        dispatch_async(dispatch_get_main_queue(), startFlow);
+    }
 }
 
 - (BOOL)isPermissionDeniedError:(nw_error_t)error
@@ -426,18 +494,22 @@ static NSTimeInterval const kLocalNetworkDefaultTimeoutSeconds = 2.0;
 /********************************/
 
 - (void)netServiceDidPublish:(NSNetService *)sender {
-    [diagnostic logDebug:@"netServiceDidPublish: Local network permission has been granted"];
-    [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateGranted shouldCache:YES];
+    [self performLocalNetworkCallbackSafelyWithContext:@"netServiceDidPublish" block:^{
+        [diagnostic logDebug:@"netServiceDidPublish: Local network permission has been granted"];
+        [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateGranted shouldCache:YES];
+    }];
 }
 
 - (void)netService:(NSNetService *)sender didNotPublish:(NSDictionary<NSString *,NSNumber *> *)errorDict {
-    NSNumber *errorDomain = errorDict[NSNetServicesErrorDomain];
-    NSNumber *errorCode = errorDict[NSNetServicesErrorCode];
-    [diagnostic logDebug:[NSString stringWithFormat:@"netService didNotPublish (domain=%@, code=%@)", errorDomain, errorCode]];
-    // NSNetService can fail to publish for many reasons unrelated to permissions (network issues,
-    // name collisions, configuration problems, etc.). We cannot reliably determine permission denial
-    // from NSNetService error codes alone, so return indeterminate. The browser state handler in
-    // handleBrowserState will catch actual permission denials via isPermissionDeniedError.
-    [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+    [self performLocalNetworkCallbackSafelyWithContext:@"netService didNotPublish" block:^{
+        NSNumber *errorDomain = errorDict[NSNetServicesErrorDomain];
+        NSNumber *errorCode = errorDict[NSNetServicesErrorCode];
+        [diagnostic logDebug:[NSString stringWithFormat:@"netService didNotPublish (domain=%@, code=%@)", errorDomain, errorCode]];
+        // NSNetService can fail to publish for many reasons unrelated to permissions (network issues,
+        // name collisions, configuration problems, etc.). We cannot reliably determine permission denial
+        // from NSNetService error codes alone, so return indeterminate. The browser state handler in
+        // handleBrowserState will catch actual permission denials via isPermissionDeniedError.
+        [self completeLocalNetworkFlowWithState:LocalNetworkPermissionStateIndeterminate shouldCache:NO];
+    }];
 }
 @end
