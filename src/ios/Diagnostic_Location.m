@@ -78,6 +78,41 @@ static NSString*const LOG_TAG = @"Diagnostic_Location[native]";
         @try {
             if ([CLLocationManager instancesRespondToSelector:@selector(requestWhenInUseAuthorization)])
             {
+                // Apply desired accuracy if specified (argument at index 1).
+                // Maps string values to CLLocationAccuracy constants.
+                // If not specified or unrecognised, defaults to kCLLocationAccuracyBest to maintain backward
+                // compatibility. Apps that do not require precise location (e.g. only need the Wi-Fi SSID)
+                // should pass "reduced" to avoid engaging GPS hardware and unnecessary battery drain.
+                NSString* accuracy = [command argumentAtIndex:1 withDefault:nil];
+                if(accuracy != nil){
+                    if([accuracy isEqualToString:@"reduced"]){
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyReduced;
+                        [diagnostic logDebug:@"Setting location accuracy: reduced"];
+                    }else if([accuracy isEqualToString:@"bestForNavigation"]){
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+                        [diagnostic logDebug:@"Setting location accuracy: bestForNavigation"];
+                    }else if([accuracy isEqualToString:@"nearestTenMeters"]){
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+                        [diagnostic logDebug:@"Setting location accuracy: nearestTenMeters"];
+                    }else if([accuracy isEqualToString:@"hundredMeters"]){
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                        [diagnostic logDebug:@"Setting location accuracy: hundredMeters"];
+                    }else if([accuracy isEqualToString:@"kilometer"]){
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
+                        [diagnostic logDebug:@"Setting location accuracy: kilometer"];
+                    }else if([accuracy isEqualToString:@"threeKilometers"]){
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+                        [diagnostic logDebug:@"Setting location accuracy: threeKilometers"];
+                    }else{
+                        // "full", "best", or any unrecognised value
+                        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+                        [diagnostic logDebug:@"Setting location accuracy: best"];
+                    }
+                }else{
+                    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+                    [diagnostic logDebug:@"Setting location accuracy: best (default)"];
+                }
+
                 BOOL always = [[command argumentAtIndex:0] boolValue];
                 if(always){
                     NSAssert([[[NSBundle mainBundle] infoDictionary] valueForKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"], @"Your app must have a value for NSLocationAlwaysAndWhenInUseUsageDescription in its Info.plist");

@@ -1411,6 +1411,7 @@ Platforms: Android & iOS
 
 - Defines constants for the various location accuracy authorization states on iOS 14+ and Android 12+.
 - See [CLAccuracyAuthorization](https://developer.apple.com/documentation/corelocation/claccuracyauthorization) for iOS 14+ and [approximate location](https://developer.android.com/training/location/permissions#approximate-request) for Android 12+
+- On iOS, these values can also be passed to `requestLocationAuthorization()` to set the desired [CLLocationAccuracy](https://developer.apple.com/documentation/corelocation/cllocationaccuracy).
 
 ```
 cordova.plugins.diagnostic.locationAccuracyAuthorization
@@ -1418,8 +1419,14 @@ cordova.plugins.diagnostic.locationAccuracyAuthorization
 
 #### Values
 
-- `FULL` - The user authorized the app to access location data with full accuracy.
-- `REDUCED` - The user authorized the app to access location data with reduced accuracy.
+- `FULL` - The user authorized the app to access location data with full accuracy. Alias for `BEST`. On iOS, sets `kCLLocationAccuracyBest`.
+- `REDUCED` - The user authorized the app to access location data with reduced accuracy. On iOS, sets `kCLLocationAccuracyReduced` - approximate location preserving region/city, typically within 1-20km, no GPS hardware engagement.
+- `BEST` - On iOS, sets `kCLLocationAccuracyBest`. May engage GPS hardware.
+- `BEST_FOR_NAVIGATION` - On iOS, sets `kCLLocationAccuracyBestForNavigation`. Highest accuracy using additional sensor data.
+- `NEAREST_TEN_METERS` - On iOS, sets `kCLLocationAccuracyNearestTenMeters`.
+- `HUNDRED_METERS` - On iOS, sets `kCLLocationAccuracyHundredMeters`.
+- `KILOMETER` - On iOS, sets `kCLLocationAccuracyKilometer`.
+- `THREE_KILOMETERS` - On iOS, sets `kCLLocationAccuracyThreeKilometers`.
 
 
 ### isLocationAvailable()
@@ -1821,6 +1828,16 @@ Notes for Android:
 - When the plugin is running on/built with Android 12+ / API 31+, you can specify requested location accuracy using the `accuracy` parameter.
     - If the build SDK/device version is <= Android 11 / API 30, `FULL` accuracy is implicitly granted.
 
+On iOS, the `accuracy` parameter sets the `desiredAccuracy` of the internal `CLLocationManager` used by the plugin:
+- `FULL` / `BEST` (default) - sets `kCLLocationAccuracyBest`, which may engage GPS hardware.
+- `REDUCED` - sets `kCLLocationAccuracyReduced`, providing approximate location (typically within 1-20km) without engaging GPS hardware.
+- `BEST_FOR_NAVIGATION` - sets `kCLLocationAccuracyBestForNavigation`, the highest accuracy using additional sensor data.
+- `NEAREST_TEN_METERS` - sets `kCLLocationAccuracyNearestTenMeters`.
+- `HUNDRED_METERS` - sets `kCLLocationAccuracyHundredMeters`.
+- `KILOMETER` - sets `kCLLocationAccuracyKilometer`.
+- `THREE_KILOMETERS` - sets `kCLLocationAccuracyThreeKilometers`.
+- Apps that only need the location permission for non-location purposes (e.g. to access the Wi-Fi SSID) should use `REDUCED` to avoid unnecessary battery drain.
+
 ```
 cordova.plugins.diagnostic.requestLocationAuthorization(successCallback, errorCallback, mode, accuracy);
 ```
@@ -1833,9 +1850,10 @@ cordova.plugins.diagnostic.requestLocationAuthorization(successCallback, errorCa
     - The function is passed a single string parameter containing the error message.
 - {String} mode - (optional / iOS & Android >= 10) location authorization mode specified as a [locationAuthorizationMode constant](#locationauthorizationmode-constants).
     - If not specified, defaults to `WHEN_IN_USE`.
-- {String} accuracy - (optional / Android 12+) requested location accuracy as a constant in `cordova.plugins.diagnostic.locationAccuracyAuthorization`
+- {String} accuracy - (optional / iOS & Android 12+) requested location accuracy as a constant in `cordova.plugins.diagnostic.locationAccuracyAuthorization`
     - If not specified, defaults to `cordova.plugins.diagnostic.locationAccuracyAuthorization.FULL`
-    - On Android <12 & iOS, has no effect.
+    - On iOS, sets the CLLocationManager's desiredAccuracy - see [locationAccuracyAuthorization constants](#locationaccuracyauthorization-constants) for the full list of available values.
+    - On Android <12, has no effect.
 
 #### Example usage
 

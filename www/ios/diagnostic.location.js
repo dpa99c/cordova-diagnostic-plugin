@@ -29,7 +29,13 @@ var Diagnostic_Location = (function(){
 
     Diagnostic.locationAccuracyAuthorization = Diagnostic_Location.locationAccuracyAuthorization = {
         "FULL": "full",
-        "REDUCED": "reduced"
+        "REDUCED": "reduced",
+        "BEST": "best",
+        "BEST_FOR_NAVIGATION": "bestForNavigation",
+        "NEAREST_TEN_METERS": "nearestTenMeters",
+        "HUNDRED_METERS": "hundredMeters",
+        "KILOMETER": "kilometer",
+        "THREE_KILOMETERS": "threeKilometers"
     };
 
     /********************
@@ -161,13 +167,23 @@ var Diagnostic_Location = (function(){
      * This callback function is passed a single string parameter containing the error message.
      * @param {String} mode - (optional) location authorization mode as a constant in `cordova.plugins.diagnostic.locationAuthorizationMode`.
      * If not specified, defaults to `cordova.plugins.diagnostic.locationAuthorizationMode.WHEN_IN_USE`.
+     * @param {String} accuracy - (optional) desired location accuracy as a constant in `cordova.plugins.diagnostic.locationAccuracyAuthorization`.
+     * If not specified, defaults to `cordova.plugins.diagnostic.locationAccuracyAuthorization.FULL`.
+     * On iOS, this sets the CLLocationManager's desiredAccuracy:
+     * - `FULL` / `BEST` - kCLLocationAccuracyBest (may engage GPS hardware)
+     * - `REDUCED` - kCLLocationAccuracyReduced (approximate location, no GPS)
+     * - `BEST_FOR_NAVIGATION` - kCLLocationAccuracyBestForNavigation (highest accuracy with additional sensors)
+     * - `NEAREST_TEN_METERS` - kCLLocationAccuracyNearestTenMeters
+     * - `HUNDRED_METERS` - kCLLocationAccuracyHundredMeters
+     * - `KILOMETER` - kCLLocationAccuracyKilometer
+     * - `THREE_KILOMETERS` - kCLLocationAccuracyThreeKilometers
      */
-    Diagnostic_Location.requestLocationAuthorization = function(successCallback, errorCallback, mode) {
+    Diagnostic_Location.requestLocationAuthorization = function(successCallback, errorCallback, mode, accuracy) {
         return cordova.exec(successCallback,
             errorCallback,
             'Diagnostic_Location',
             'requestLocationAuthorization',
-            [mode && mode === Diagnostic_Location.locationAuthorizationMode.ALWAYS]);
+            [mode && mode === Diagnostic_Location.locationAuthorizationMode.ALWAYS, accuracy]);
     };
 
     /**

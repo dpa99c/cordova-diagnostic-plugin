@@ -110,8 +110,22 @@ interface Diagnostic {
      * @type {Object}
      */
     locationAccuracyAuthorization: {
+        /** Alias for BEST. Sets kCLLocationAccuracyBest on iOS. */
         "FULL": "full";
+        /** Sets kCLLocationAccuracyReduced on iOS - approximate location, no GPS. */
         "REDUCED": "reduced";
+        /** Sets kCLLocationAccuracyBest on iOS - may engage GPS hardware. */
+        "BEST": "best";
+        /** Sets kCLLocationAccuracyBestForNavigation on iOS - highest accuracy with additional sensors. */
+        "BEST_FOR_NAVIGATION": "bestForNavigation";
+        /** Sets kCLLocationAccuracyNearestTenMeters on iOS. */
+        "NEAREST_TEN_METERS": "nearestTenMeters";
+        /** Sets kCLLocationAccuracyHundredMeters on iOS. */
+        "HUNDRED_METERS": "hundredMeters";
+        /** Sets kCLLocationAccuracyKilometer on iOS. */
+        "KILOMETER": "kilometer";
+        /** Sets kCLLocationAccuracyThreeKilometers on iOS. */
+        "THREE_KILOMETERS": "threeKilometers";
     };
 
 
@@ -464,7 +478,17 @@ interface Diagnostic {
      * @param successCallback
      * @param errorCallback
      * @param mode - (optional / iOS & Android >= 10) location authorization mode specified as a locationAuthorizationMode constant. If not specified, defaults to WHEN_IN_USE.
-     * @param accuracy
+     * @param accuracy - (optional / iOS & Android 12+) desired location accuracy as a locationAccuracyAuthorization constant.
+     * If not specified, defaults to FULL.
+     * On iOS, this sets the CLLocationManager's desiredAccuracy:
+     * - FULL / BEST - kCLLocationAccuracyBest (may engage GPS hardware)
+     * - REDUCED - kCLLocationAccuracyReduced (approximate location, no GPS)
+     * - BEST_FOR_NAVIGATION - kCLLocationAccuracyBestForNavigation
+     * - NEAREST_TEN_METERS - kCLLocationAccuracyNearestTenMeters
+     * - HUNDRED_METERS - kCLLocationAccuracyHundredMeters
+     * - KILOMETER - kCLLocationAccuracyKilometer
+     * - THREE_KILOMETERS - kCLLocationAccuracyThreeKilometers
+     * On Android < 12, has no effect.
      */
     requestLocationAuthorization?: (
         successCallback: (status: string) => void,
