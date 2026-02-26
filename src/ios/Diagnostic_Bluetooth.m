@@ -156,12 +156,14 @@ static NSString*const LOG_TAG = @"Diagnostic_Bluetooth[native]";
 }
 
 - (void) ensureBluetoothManager {
-    if(![self.bluetoothManager isKindOfClass:[CBCentralManager class]]){
+    @synchronized(self) {
+      if(![self.bluetoothManager isKindOfClass:[CBCentralManager class]]){
         self.bluetoothManager = [[CBCentralManager alloc]
                                  initWithDelegate:self
                                  queue:dispatch_get_main_queue()
                                  options:@{CBCentralManagerOptionShowPowerAlertKey: @(NO)}];
         [self centralManagerDidUpdateState:self.bluetoothManager]; // Send initial state
+      }
     }
 }
 
