@@ -28,7 +28,7 @@ const COMMENT_START = "<!--";
 const COMMENT_END = "-->";
 
 // Node dependencies
-var path, cwd, fs;
+var path, fs;
 
 // External dependencies
 var et;
@@ -36,7 +36,7 @@ var et;
 // Internal dependencies
 var logger;
 
-var projectPath, modulesPath, pluginNodePath, pluginScriptsPath, configXmlPath, pluginXmlPath, configXmlData, pluginXmlText;
+var projectPath, pluginNodePath, pluginScriptsPath, configXmlPath, pluginXmlPath, configXmlData, pluginXmlText;
 
 
 /*********************
@@ -137,24 +137,44 @@ var getModuleEnd = function(module){
 /**********
  * Main
  **********/
+// Finds the project root by walking up from startDir looking for config.xml
+var findProjectRoot = function(startDir) {
+    var dir = startDir;
+    while (true) {
+        if (fs.existsSync(path.join(dir, 'config.xml'))) {
+            return dir;
+        }
+        var parent = path.dirname(dir);
+        if (parent === dir) {
+            // Reached filesystem root without finding config.xml
+            return null;
+        }
+        dir = parent;
+    }
+};
+
 var main = function() {
     try{
         fs = require('fs');
         path = require('path');
-        cwd = path.resolve();
-        pluginNodePath = cwd;
 
-        modulesPath = path.resolve(pluginNodePath, "..");
-        projectPath = path.resolve(modulesPath, "..");
-        pluginScriptsPath = path.resolve(pluginNodePath, "scripts");
+        // Use __dirname to reliably locate the plugin regardless of node_modules structure.
+        // This works with npm, yarn, and pnpm (which uses symlinked .pnpm store).
+        pluginNodePath = path.resolve(__dirname, "..");
+        pluginScriptsPath = __dirname;
 
-        logger = require(path.resolve(pluginScriptsPath, "logger.js"))(modulesPath, PLUGIN_ID);
-        et = require(path.resolve(modulesPath, "elementtree"));
+        logger = require(path.join(pluginScriptsPath, "logger.js"))(PLUGIN_ID);
+        et = require('elementtree');
     }catch(e){
         handleError("Failed to load dependencies. If using cordova@6 CLI, ensure this plugin is installed with the --fetch option or run 'npm install "+PLUGIN_ID+"': " + e.message);
     }
 
     try{
+        projectPath = findProjectRoot(pluginNodePath);
+        if (!projectPath) {
+            handleError("Could not find project root (no config.xml found in any parent directory)");
+            return;
+        }
         configXmlPath = path.join(projectPath, 'config.xml');
         pluginXmlPath = path.join(pluginNodePath, "plugin.xml");
         run();
