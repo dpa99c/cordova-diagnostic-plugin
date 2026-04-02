@@ -75,10 +75,17 @@ static NSString*const LOG_TAG = @"Diagnostic_Calendar[native]";
                 self.eventStore = [EKEventStore new];
             }
 
-            [self.eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
-                [diagnostic logDebug:[NSString stringWithFormat:@"Access request to calendar events: %d", granted]];
-                [diagnostic sendPluginResultBool:granted:command];
-            }];
+            if (@available(iOS 17.0, *)) {
+                [self.eventStore requestFullAccessToEventsWithCompletion:^(BOOL granted, NSError *error) {
+                    [diagnostic logDebug:[NSString stringWithFormat:@"Access request to calendar events: %d", granted]];
+                    [diagnostic sendPluginResultBool:granted:command];
+                }];
+            } else {
+                [self.eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
+                    [diagnostic logDebug:[NSString stringWithFormat:@"Access request to calendar events: %d", granted]];
+                    [diagnostic sendPluginResultBool:granted:command];
+                }];
+            }
         }
         @catch (NSException *exception) {
             [diagnostic handlePluginException:exception :command];
