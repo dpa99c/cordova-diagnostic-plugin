@@ -7,6 +7,7 @@
  */
 
 #import "Diagnostic.h"
+#import <ifaddrs.h>
 // Only import the following header if we're not on Mac Catalyst
 #if !TARGET_OS_MACCATALYST
 #import <CoreTelephony/CTCellularData.h>
@@ -261,6 +262,35 @@ static CTCellularData* cellularData;
         }
         @catch (NSException *exception) {
             [diagnostic handlePluginException:exception :command];
+        }
+    }];
+}
+
+- (void) deviceSupportsMobileData: (CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        @try {
+            struct ifaddrs *addrs = NULL;
+            BOOL supported = NO;
+            if (getifaddrs(&addrs) == 0) {
+                const struct ifaddrs *cursor = addrs;
+                while (cursor != NULL) {
+                    if (cursor->ifa_name != NULL) {
+                        NSString *name = [NSString stringWithUTF8String:cursor->ifa_name];
+                        if ([name isEqualToString:@"pdp_ip0"]) {
+                            supported = YES;
+                            break;
+                        }
+                    }
+                    cursor = cursor->ifa_next;
+                }
+                freeifaddrs(addrs);
+            }
+
+            [self sendPluginResultBool:supported :command];
+        }
+        @catch (NSException *exception) {
+            [self handlePluginException:exception :command];
         }
     }];
 }

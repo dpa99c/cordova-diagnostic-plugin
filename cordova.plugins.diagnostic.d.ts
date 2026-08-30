@@ -386,6 +386,19 @@ interface Diagnostic {
     ) => void;
 
     /**
+     * IOS ONLY
+     *
+     * Checks if the device has a cellular network interface.
+     *
+     * @param successCallback
+     * @param errorCallback
+     */
+    deviceSupportsMobileData?: (
+        successCallback: (supported: boolean) => void,
+        errorCallback: (error: string) => void
+    ) => void;
+
+    /**
      *
      * Checks if accessibility mode is enabled on device.
      *
