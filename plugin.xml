@@ -225,6 +225,9 @@
         <config-file target="*-Info.plist" parent="NSCalendarsUsageDescription">
             <string>This app requires calendar access to function properly.</string>
         </config-file>
+        <config-file target="*-Info.plist" parent="NSCalendarsFullAccessUsageDescription">
+            <string>This app requires full calendar access to function properly.</string>
+        </config-file>
 
         <header-file src="src/ios/Diagnostic_Calendar.h" />
         <source-file src="src/ios/Diagnostic_Calendar.m" />

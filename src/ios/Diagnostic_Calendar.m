@@ -33,7 +33,7 @@ static NSString*const LOG_TAG = @"Diagnostic_Calendar[native]";
 {
     [self.commandDelegate runInBackground:^{
         @try {
-            NSString* status;
+            NSString* status = UNKNOWN;
 
             EKAuthorizationStatus authStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent];
 
@@ -43,6 +43,13 @@ static NSString*const LOG_TAG = @"Diagnostic_Calendar[native]";
                 status = AUTHORIZATION_NOT_DETERMINED;
             }else if(authStatus == EKAuthorizationStatusAuthorized){
                 status = AUTHORIZATION_GRANTED;
+            }
+            if (@available(iOS 17.0, *)) {
+                if(authStatus == EKAuthorizationStatusFullAccess){
+                    status = AUTHORIZATION_GRANTED;
+                }else if(authStatus == EKAuthorizationStatusWriteOnly){
+                    status = AUTHORIZATION_DENIED;
+                }
             }
             [diagnostic logDebug:[NSString stringWithFormat:@"Calendar event authorization status is: %@", status]];
             [diagnostic sendPluginResultString:status:command];
@@ -58,7 +65,11 @@ static NSString*const LOG_TAG = @"Diagnostic_Calendar[native]";
     [self.commandDelegate runInBackground:^{
         @try {
             EKAuthorizationStatus authStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent];
-            [diagnostic sendPluginResultBool:authStatus == EKAuthorizationStatusAuthorized:command];
+            BOOL authorized = authStatus == EKAuthorizationStatusAuthorized;
+            if (@available(iOS 17.0, *)) {
+                authorized = authorized || authStatus == EKAuthorizationStatusFullAccess;
+            }
+            [diagnostic sendPluginResultBool:authorized:command];
         }
         @catch (NSException *exception) {
             [diagnostic handlePluginException:exception :command];
