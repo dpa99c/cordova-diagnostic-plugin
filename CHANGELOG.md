@@ -1,5 +1,16 @@
 # CHANGELOG
 
+**v7.4.0**
+- (ios) Fix `requestCalendarAuthorization` on iOS 17+
+  - Fixes [issue #512](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/512)
+  - Merged from [PR #538](https://github.com/dpa99c/cordova-diagnostic-plugin/pull/538)
+- (android) Added shared request-state helpers and integrated them into all three specialized Android wrappers.
+  - Fixes [issue #487](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/487)
+- (doc) Fix `getBluetoothAuthorizationStatus` example.
+  - Fixes [issue #485](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/485)
+- (ios) feat: add `deviceSupportsMobileData` to check if the device has a cellular network interface.
+  - Merged from [PR #528](https://github.com/dpa99c/cordova-diagnostic-plugin/pull/528)
+
 **v7.3.1**
 * (android) add explicit support for runtime permissions up to API 37
 
