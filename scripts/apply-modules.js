@@ -28,7 +28,7 @@ const COMMENT_START = "<!--";
 const COMMENT_END = "-->";
 
 // Node dependencies
-var path, cwd, fs;
+var path, fs;
 
 // External dependencies
 var et;
@@ -36,7 +36,7 @@ var et;
 // Internal dependencies
 var logger;
 
-var projectPath, modulesPath, pluginNodePath, pluginScriptsPath, configXmlPath, pluginXmlPath, configXmlData, pluginXmlText;
+var projectPath, pluginNodePath, pluginScriptsPath, configXmlPath, pluginXmlPath, configXmlData, pluginXmlText;
 
 
 /*********************
@@ -107,6 +107,24 @@ var getSelectedModules = function(){
     return modules;
 };
 
+var findProjectRoot = function(startDir){
+    if(!startDir){
+        return null;
+    }
+
+    var dir = path.resolve(startDir);
+    while(true){
+        if(fs.existsSync(path.join(dir, 'config.xml'))){
+            return dir;
+        }
+        var parent = path.dirname(dir);
+        if(parent === dir){
+            return null;
+        }
+        dir = parent;
+    }
+};
+
 var enableAllModules = function(){
     MODULES.forEach(function(module){
         var commentedStartRegExp = new RegExp(getModuleStart(module)+COMMENT_START, "g");
@@ -141,20 +159,20 @@ var main = function() {
     try{
         fs = require('fs');
         path = require('path');
-        cwd = path.resolve();
-        pluginNodePath = cwd;
+        pluginScriptsPath = __dirname;
+        pluginNodePath = path.resolve(pluginScriptsPath, "..");
 
-        modulesPath = path.resolve(pluginNodePath, "..");
-        projectPath = path.resolve(modulesPath, "..");
-        pluginScriptsPath = path.resolve(pluginNodePath, "scripts");
-
-        logger = require(path.resolve(pluginScriptsPath, "logger.js"))(modulesPath, PLUGIN_ID);
-        et = require(path.resolve(modulesPath, "elementtree"));
+        logger = require(path.join(pluginScriptsPath, "logger.js"))(PLUGIN_ID);
+        et = require('elementtree');
     }catch(e){
         handleError("Failed to load dependencies. If using cordova@6 CLI, ensure this plugin is installed with the --fetch option or run 'npm install "+PLUGIN_ID+"': " + e.message);
     }
 
     try{
+        projectPath = (process.env.INIT_CWD && findProjectRoot(process.env.INIT_CWD)) || findProjectRoot(pluginNodePath);
+        if(!projectPath){
+            return handleError("Could not find project config.xml");
+        }
         configXmlPath = path.join(projectPath, 'config.xml');
         pluginXmlPath = path.join(pluginNodePath, "plugin.xml");
         run();
