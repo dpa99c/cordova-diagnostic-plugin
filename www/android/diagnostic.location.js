@@ -222,11 +222,17 @@ var Diagnostic_Location = (function(){
      */
     Diagnostic_Location.requestLocationAuthorization = function(successCallback, errorCallback, mode, accuracy){
         function onSuccess(statuses){
+            Diagnostic._endPermissionRequest();
             successCallback(combineLocationStatuses(statuses));
         }
+        function onError(error){
+            Diagnostic._endPermissionRequest();
+            if(typeof errorCallback === "function") errorCallback(error);
+        }
+        if(!Diagnostic._beginPermissionRequest(errorCallback)) return;
         return cordova.exec(
             onSuccess,
-            errorCallback,
+            onError,
             'Diagnostic_Location',
             'requestLocationAuthorization',
             [mode === Diagnostic_Location.locationAuthorizationMode.ALWAYS, accuracy !== Diagnostic_Location.locationAccuracyAuthorization.REDUCED]

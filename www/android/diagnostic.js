@@ -16,6 +16,21 @@ var Diagnostic = (function(){
     // Indicates if a runtime permissions request is in progress
     var requestInProgress = false;
 
+    Diagnostic._beginPermissionRequest = function(errorCallback){
+        if(requestInProgress){
+            if(typeof errorCallback === "function"){
+                errorCallback("A runtime permissions request is already in progress");
+            }
+            return false;
+        }
+        requestInProgress = true;
+        return true;
+    };
+
+    Diagnostic._endPermissionRequest = function(){
+        requestInProgress = false;
+    };
+
     /********************
      *
      * Public properties
@@ -273,22 +288,19 @@ var Diagnostic = (function(){
     Diagnostic.requestRuntimePermission = function(successCallback, errorCallback, permission) {
         if(!checkForInvalidPermissions(permission, errorCallback)) return;
 
-        if(requestInProgress){
-            return onError("A runtime permissions request is already in progress");
-        }
+        if(!Diagnostic._beginPermissionRequest(errorCallback)) return;
 
         function onSuccess(statuses){
-            requestInProgress = false;
+            Diagnostic._endPermissionRequest();
             successCallback(statuses[permission]);
             Diagnostic._onPermissionRequestComplete(statuses);
         }
 
         function onError(error){
-            requestInProgress = false;
+            Diagnostic._endPermissionRequest();
             errorCallback(error);
         }
 
-        requestInProgress = true;
         return cordova.exec(
             onSuccess,
             onError,
@@ -310,22 +322,19 @@ var Diagnostic = (function(){
     Diagnostic.requestRuntimePermissions = function(successCallback, errorCallback, permissions){
         if(!checkForInvalidPermissions(permissions, errorCallback)) return;
 
-        if(requestInProgress){
-            return onError("A runtime permissions request is already in progress");
-        }
+        if(!Diagnostic._beginPermissionRequest(errorCallback)) return;
 
         function onSuccess(statuses){
-            requestInProgress = false;
+            Diagnostic._endPermissionRequest();
             successCallback(statuses);
             Diagnostic._onPermissionRequestComplete(statuses);
         }
 
         function onError(error){
-            requestInProgress = false;
+            Diagnostic._endPermissionRequest();
             errorCallback(error);
         }
 
-        requestInProgress = true;
         return cordova.exec(
             onSuccess,
             onError,

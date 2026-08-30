@@ -265,9 +265,18 @@ var Diagnostic_Bluetooth = (function(){
      * If not specified, all 3 permissions will be requested.
      */
     Diagnostic_Bluetooth.requestBluetoothAuthorization = function(successCallback, errorCallback, permissions) {
+        function onSuccess(statuses){
+            Diagnostic._endPermissionRequest();
+            if(typeof successCallback === "function") successCallback(statuses);
+        }
+        function onError(error){
+            Diagnostic._endPermissionRequest();
+            if(typeof errorCallback === "function") errorCallback(error);
+        }
+        if(!Diagnostic._beginPermissionRequest(errorCallback)) return;
         return cordova.exec(
-            successCallback,
-            errorCallback,
+            onSuccess,
+            onError,
             'Diagnostic_Bluetooth',
             'requestBluetoothAuthorization',
             [permissions]);

@@ -126,11 +126,18 @@ var Diagnostic_Camera = (function(){
 
         params.successCallback = params.successCallback || function(){};
         var onSuccess = function(statuses){
+            Diagnostic._endPermissionRequest();
             params.successCallback(numberOfKeys(statuses) > 1 ? cordova.plugins.diagnostic._combinePermissionStatuses(statuses): statuses[Diagnostic.permission.CAMERA]);
         };
+        var onError = function(error){
+            Diagnostic._endPermissionRequest();
+            if(typeof params.errorCallback === "function") params.errorCallback(error);
+        };
+
+        if(!Diagnostic._beginPermissionRequest(params.errorCallback)) return;
 
         return cordova.exec(onSuccess,
-            params.errorCallback,
+            onError,
             'Diagnostic_Camera',
             'requestCameraAuthorization',
             [!!params.storage]);
