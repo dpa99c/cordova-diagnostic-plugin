@@ -2393,10 +2393,8 @@ cordova.plugins.diagnostic.getBluetoothAuthorizationStatus(successCallback, erro
 
 #### Example usage
 
-    cordova.plugins.diagnostic.getBluetoothAuthorizationStatuses(function(statuses){
-        for(var permission in statuses){
-            console.log(permission + " permission is: " + statuses[permission]));
-        }
+    cordova.plugins.diagnostic.getBluetoothAuthorizationStatus(function(status){
+        console.log(permission + " permission is: " + status);
     }, function(error){
         console.error(error);
     });
